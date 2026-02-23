@@ -5,395 +5,220 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>은하학생회</title>
   <link href="https://fonts.googleapis.com/css2?family=Noto+Serif+KR:wght@400;700&family=Noto+Sans+KR:wght@300;400;600&display=swap" rel="stylesheet"/>
+
+  <!--Firebase SDK -->
+  <script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
+    import { getDatabase, ref, push, onValue, remove, update } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-database.js";
+
+    // ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+    // Firebase 콘솔
+    const firebaseConfig = {
+    apiKey: "AIzaSyCeMurbwJyJA5QpQOGWQHVjZ0tkP7PKSog",
+    authDomain: "galaxy-council.firebaseapp.com",
+    databaseURL: "https://galaxy-council-default-rtdb.firebaseio.com",
+    projectId: "galaxy-council",
+    storageBucket: "galaxy-council.firebasestorage.app",
+    messagingSenderId: "1089635315923",
+    appId: "1:1089635315923:web:6756b565c0076b18dde426",
+    measurementId: "G-YLEBPLYN3Q"
+    };
+    // ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+    const app = initializeApp(firebaseConfig);
+    const db = getDatabase(app);
+    const postsRef = ref(db, 'posts');
+    const suggestsRef = ref(db, 'suggests');
+    const pollsRef = ref(db, 'polls');
+
+    window._db = db; window._ref = ref; window._push = push;
+    window._onValue = onValue; window._remove = remove; window._update = update;
+    window._postsRef = postsRef; window._suggestsRef = suggestsRef; window._pollsRef = pollsRef;
+    window._firebaseReady = true;
+
+    onValue(postsRef, snap => {
+      window._postsData = snap.val() || {};
+      if (typeof window.renderPosts === 'function') window.renderPosts();
+    });
+    onValue(suggestsRef, snap => {
+      window._suggestsData = snap.val() || {};
+      if (typeof window.renderSuggests === 'function') window.renderSuggests();
+    });
+    onValue(pollsRef, snap => {
+      window._pollsData = snap.val() || {};
+      if (typeof window.renderPolls === 'function') window.renderPolls();
+    });
+  </script>
+
   <style>
     :root {
-      --bg: #050a18;
-      --surface: #0d1630;
-      --surface2: #111d3c;
-      --accent: #a78bfa;
-      --accent2: #60a5fa;
-      --star: #e0e7ff;
-      --text: #e2e8f0;
-      --muted: #94a3b8;
-      --border: rgba(167,139,250,0.2);
-      --glow: 0 0 20px rgba(167,139,250,0.3);
+      --bg: #050a18; --surface: #0d1630; --surface2: #111d3c;
+      --accent: #a78bfa; --accent2: #60a5fa; --star: #e0e7ff;
+      --text: #e2e8f0; --muted: #94a3b8;
+      --border: rgba(167,139,250,0.2); --glow: 0 0 20px rgba(167,139,250,0.3);
     }
-
     * { margin: 0; padding: 0; box-sizing: border-box; }
+    body { font-family: 'Noto Sans KR', sans-serif; background: var(--bg); color: var(--text); min-height: 100vh; }
 
-    body {
-      font-family: 'Noto Sans KR', sans-serif;
-      background: var(--bg);
-      color: var(--text);
-      min-height: 100vh;
-    }
+    #stars-canvas { position: fixed; top:0; left:0; width:100%; height:100%; pointer-events:none; z-index:0; }
 
-    /* ── 별 배경 ── */
-    #stars-canvas {
-      position: fixed;
-      top: 0; left: 0;
-      width: 100%; height: 100%;
-      pointer-events: none;
-      z-index: 0;
-    }
-
-    /* ── 네비게이션 ── */
     nav {
-      position: fixed;
-      top: 0; left: 0; right: 0;
-      z-index: 100;
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
+      position: fixed; top:0; left:0; right:0; z-index:100;
+      display: flex; align-items: center; justify-content: space-between;
       padding: 16px 48px;
-      background: rgba(5,10,24,0.85);
-      backdrop-filter: blur(12px);
+      background: rgba(5,10,24,0.85); backdrop-filter: blur(12px);
       border-bottom: 1px solid var(--border);
     }
-    .nav-logo {
-      font-family: 'Noto Serif KR', serif;
-      font-size: 1.4rem;
-      font-weight: 700;
-      color: var(--accent);
-      letter-spacing: 0.05em;
-    }
+    .nav-logo { font-family:'Noto Serif KR',serif; font-size:1.4rem; font-weight:700; color:var(--accent); letter-spacing:0.05em; }
     .nav-logo span { color: var(--accent2); }
-    .nav-links { display: flex; gap: 32px; list-style: none; }
-    .nav-links li a {
-      color: var(--muted);
-      text-decoration: none;
-      font-size: 0.92rem;
-      transition: color 0.2s;
-    }
-    .nav-links li a:hover { color: var(--accent); }
+    .nav-links { display:flex; gap:32px; list-style:none; }
+    .nav-links li a { color:var(--muted); text-decoration:none; font-size:0.92rem; transition:color 0.2s; }
+    .nav-links li a:hover { color:var(--accent); }
 
-    /* ── 공통 섹션 ── */
-    section {
-      position: relative;
-      z-index: 1;
-      padding: 120px 48px 80px;
-      max-width: 1100px;
-      margin: 0 auto;
-    }
-    .section-title {
-      font-family: 'Noto Serif KR', serif;
-      font-size: 2rem;
-      font-weight: 700;
-      color: var(--accent);
-      margin-bottom: 8px;
-    }
-    .section-sub {
-      color: var(--muted);
-      font-size: 0.9rem;
-      margin-bottom: 48px;
-    }
-    .divider {
-      height: 1px;
-      background: linear-gradient(90deg, var(--accent), transparent);
-      margin-bottom: 48px;
-    }
+    section { position:relative; z-index:1; padding:120px 48px 80px; max-width:1100px; margin:0 auto; }
+    .section-title { font-family:'Noto Serif KR',serif; font-size:2rem; font-weight:700; color:var(--accent); margin-bottom:8px; }
+    .section-sub { color:var(--muted); font-size:0.9rem; margin-bottom:48px; }
+    .divider { height:1px; background:linear-gradient(90deg,var(--accent),transparent); margin-bottom:48px; }
 
-    /* ── 히어로 ── */
     #home {
-      min-height: 100vh;
-      display: flex;
-      flex-direction: column;
-      justify-content: center;
-      align-items: center;
-      text-align: center;
-      padding-top: 80px;
+      min-height:100vh; display:flex; flex-direction:column;
+      justify-content:center; align-items:center; text-align:center; padding-top:80px;
     }
     .hero-badge {
-      display: inline-block;
-      background: rgba(167,139,250,0.1);
-      border: 1px solid var(--border);
-      color: var(--accent);
-      font-size: 0.8rem;
-      padding: 6px 18px;
-      border-radius: 99px;
-      margin-bottom: 24px;
-      letter-spacing: 0.1em;
+      display:inline-block; background:rgba(167,139,250,0.1); border:1px solid var(--border);
+      color:var(--accent); font-size:0.8rem; padding:6px 18px; border-radius:99px;
+      margin-bottom:24px; letter-spacing:0.1em;
     }
-    .hero-title {
-      font-family: 'Noto Serif KR', serif;
-      font-size: clamp(2.5rem, 6vw, 4.5rem);
-      font-weight: 700;
-      line-height: 1.2;
-      margin-bottom: 16px;
-    }
-    .hero-title .galaxy { color: var(--accent); }
-    .hero-desc {
-      color: var(--muted);
-      font-size: 1.1rem;
-      max-width: 500px;
-      line-height: 1.7;
-      margin-bottom: 40px;
-    }
-    .hero-buttons { display: flex; gap: 16px; flex-wrap: wrap; justify-content: center; }
-    .btn {
-      padding: 12px 28px;
-      border-radius: 8px;
-      font-size: 0.95rem;
-      cursor: pointer;
-      border: none;
-      font-family: inherit;
-      transition: all 0.2s;
-    }
-    .btn-primary {
-      background: var(--accent);
-      color: #0d0520;
-      font-weight: 600;
-    }
-    .btn-primary:hover { box-shadow: var(--glow); transform: translateY(-2px); }
-    .btn-outline {
-      background: transparent;
-      color: var(--accent);
-      border: 1px solid var(--border);
-    }
-    .btn-outline:hover { background: rgba(167,139,250,0.1); }
+    .hero-title { font-family:'Noto Serif KR',serif; font-size:clamp(2.5rem,6vw,4.5rem); font-weight:700; line-height:1.2; margin-bottom:16px; }
+    .hero-title .galaxy { color:var(--accent); }
+    .hero-desc { color:var(--muted); font-size:1.1rem; max-width:500px; line-height:1.7; margin-bottom:40px; }
+    .hero-buttons { display:flex; gap:16px; flex-wrap:wrap; justify-content:center; }
 
-    /* ── 탭 (학생회 소개) ── */
-    .tab-bar {
-      display: flex;
-      gap: 4px;
-      background: var(--surface);
-      border-radius: 12px;
-      padding: 4px;
-      margin-bottom: 40px;
-      width: fit-content;
-    }
-    .tab-btn {
-      padding: 10px 24px;
-      border-radius: 8px;
-      border: none;
-      background: transparent;
-      color: var(--muted);
-      font-family: inherit;
-      font-size: 0.95rem;
-      cursor: pointer;
-      transition: all 0.2s;
-    }
-    .tab-btn.active {
-      background: var(--accent);
-      color: #0d0520;
-      font-weight: 600;
-    }
-    .tab-panel { display: none; }
-    .tab-panel.active { display: block; }
+    .btn { padding:12px 28px; border-radius:8px; font-size:0.95rem; cursor:pointer; border:none; font-family:inherit; transition:all 0.2s; }
+    .btn-primary { background:var(--accent); color:#0d0520; font-weight:600; }
+    .btn-primary:hover { box-shadow:var(--glow); transform:translateY(-2px); }
+    .btn-outline { background:transparent; color:var(--accent); border:1px solid var(--border); }
+    .btn-outline:hover { background:rgba(167,139,250,0.1); }
+    .btn-danger { background:rgba(239,68,68,0.12); color:#f87171; border:1px solid rgba(239,68,68,0.25); font-size:0.8rem; padding:6px 12px; }
+    .btn-danger:hover { background:rgba(239,68,68,0.22); }
 
-    /* ── 임원 카드 ── */
-    .officer-grid {
-      display: grid;
-      grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
-      gap: 24px;
-    }
+    .tab-bar { display:flex; gap:4px; background:var(--surface); border-radius:12px; padding:4px; margin-bottom:40px; width:fit-content; }
+    .tab-btn { padding:10px 24px; border-radius:8px; border:none; background:transparent; color:var(--muted); font-family:inherit; font-size:0.95rem; cursor:pointer; transition:all 0.2s; }
+    .tab-btn.active { background:var(--accent); color:#0d0520; font-weight:600; }
+    .tab-panel { display:none; } .tab-panel.active { display:block; }
+
+    /* 임원 카드 */
+    .officer-grid { display:grid; grid-template-columns:repeat(auto-fill,minmax(300px,1fr)); gap:20px; }
     .officer-card {
-      background: var(--surface);
-      border: 1px solid var(--border);
-      border-radius: 16px;
-      padding: 32px 24px;
-      text-align: center;
-      transition: transform 0.2s, box-shadow 0.2s;
+      background:var(--surface); border:1px solid var(--border); border-radius:16px;
+      padding:24px 28px; display:flex; flex-direction:row; align-items:center; gap:20px;
+      transition:transform 0.2s, box-shadow 0.2s;
     }
-    .officer-card:hover { transform: translateY(-4px); box-shadow: var(--glow); }
-    .officer-avatar {
-      width: 80px; height: 80px;
-      border-radius: 50%;
-      background: linear-gradient(135deg, var(--accent), var(--accent2));
-      margin: 0 auto 16px;
-      display: flex; align-items: center; justify-content: center;
-      font-size: 2rem;
-    }
-    .officer-role {
-      font-size: 0.78rem;
-      color: var(--accent);
-      letter-spacing: 0.08em;
-      margin-bottom: 6px;
-    }
-    .officer-name {
-      font-size: 1.1rem;
-      font-weight: 600;
-      margin-bottom: 8px;
-    }
-    .officer-desc {
-      font-size: 0.85rem;
-      color: var(--muted);
-      line-height: 1.6;
-    }
+    .officer-card:hover { transform:translateY(-4px); box-shadow:var(--glow); }
+    .officer-avatar { width:72px; height:72px; border-radius:50%; background:linear-gradient(135deg,var(--accent),var(--accent2)); flex-shrink:0; display:flex; align-items:center; justify-content:center; font-size:1.8rem; }
+    .officer-info { display:flex; flex-direction:column; text-align:left; }
+    .officer-role { font-size:0.75rem; color:var(--accent); letter-spacing:0.08em; margin-bottom:4px; }
+    .officer-name { font-size:1.1rem; font-weight:600; margin-bottom:6px; }
+    .officer-desc { font-size:0.83rem; color:var(--muted); line-height:1.6; }
 
-    /* ── 공약 카드 ── */
-    .promise-list { display: flex; flex-direction: column; gap: 20px; }
-    .promise-card {
-      background: var(--surface);
-      border: 1px solid var(--border);
-      border-radius: 16px;
-      padding: 28px 32px;
-      display: flex;
-      gap: 24px;
-      align-items: flex-start;
-      transition: transform 0.2s;
-    }
-    .promise-card:hover { transform: translateX(4px); }
-    .promise-num {
-      font-family: 'Noto Serif KR', serif;
-      font-size: 2rem;
-      color: var(--border);
-      flex-shrink: 0;
-      line-height: 1;
-    }
-    .promise-title { font-size: 1.05rem; font-weight: 600; margin-bottom: 8px; }
-    .promise-body { font-size: 0.9rem; color: var(--muted); line-height: 1.7; }
+    /* 공약 카드 */
+    .promise-list { display:flex; flex-direction:column; gap:20px; }
+    .promise-card { background:var(--surface); border:1px solid var(--border); border-radius:16px; padding:28px 32px; display:flex; gap:20px; align-items:flex-start; transition:transform 0.2s; }
+    .promise-card:hover { transform:translateX(4px); }
+    .promise-icon { font-size:2.2rem; flex-shrink:0; line-height:1; margin-top:2px; }
+    .promise-title { font-size:1.05rem; font-weight:600; margin-bottom:8px; }
+    .promise-body { font-size:0.9rem; color:var(--muted); line-height:1.7; }
 
-    /* ── 게시판 ── */
-    .admin-login-box {
-      background: var(--surface);
-      border: 1px solid var(--border);
-      border-radius: 16px;
-      padding: 32px;
-      max-width: 420px;
-      margin-bottom: 40px;
-    }
-    .admin-login-box h3 { margin-bottom: 16px; font-size: 1rem; }
-    .form-row { display: flex; gap: 12px; margin-bottom: 12px; }
-    .form-input {
-      flex: 1;
-      background: var(--bg);
-      border: 1px solid var(--border);
-      border-radius: 8px;
-      padding: 10px 14px;
-      color: var(--text);
-      font-family: inherit;
-      font-size: 0.9rem;
-      outline: none;
-    }
-    .form-input:focus { border-color: var(--accent); }
-    textarea.form-input { resize: vertical; min-height: 100px; }
+    /* 게시판 */
+    .admin-login-box { background:var(--surface); border:1px solid var(--border); border-radius:16px; padding:32px; max-width:420px; margin-bottom:40px; }
+    .admin-login-box h3 { margin-bottom:16px; font-size:1rem; }
+    .form-row { display:flex; gap:12px; margin-bottom:12px; }
+    .form-input { flex:1; background:var(--bg); border:1px solid var(--border); border-radius:8px; padding:10px 14px; color:var(--text); font-family:inherit; font-size:0.9rem; outline:none; }
+    .form-input:focus { border-color:var(--accent); }
+    textarea.form-input { resize:vertical; min-height:100px; }
 
-    .post-list { display: flex; flex-direction: column; gap: 16px; }
-    .post-card {
-      background: var(--surface);
-      border: 1px solid var(--border);
-      border-radius: 12px;
-      padding: 24px 28px;
-      cursor: pointer;
-      transition: all 0.2s;
-    }
-    .post-card:hover { border-color: var(--accent); }
-    .post-meta { font-size: 0.78rem; color: var(--muted); margin-bottom: 8px; }
-    .post-title { font-size: 1.05rem; font-weight: 600; margin-bottom: 8px; }
-    .post-preview { font-size: 0.88rem; color: var(--muted); }
-    .post-detail { display: none; margin-top: 16px; }
-    .post-detail.open { display: block; }
-    .post-detail-body {
-      background: var(--bg);
-      border-radius: 8px;
-      padding: 20px;
-      font-size: 0.92rem;
-      line-height: 1.8;
-      color: var(--text);
-    }
+    .post-list { display:flex; flex-direction:column; gap:16px; }
+    .post-card { background:var(--surface); border:1px solid var(--border); border-radius:12px; padding:24px 28px; transition:all 0.2s; }
+    .post-card:hover { border-color:var(--accent); }
+    .post-header { display:flex; justify-content:space-between; align-items:flex-start; cursor:pointer; }
+    .post-meta { font-size:0.78rem; color:var(--muted); margin-bottom:8px; }
+    .post-title { font-size:1.05rem; font-weight:600; margin-bottom:8px; }
+    .post-preview { font-size:0.88rem; color:var(--muted); }
+    .post-detail { display:none; margin-top:16px; }
+    .post-detail.open { display:block; }
+    .post-detail-body { background:var(--bg); border-radius:8px; padding:20px; font-size:0.92rem; line-height:1.8; color:var(--text); }
+    .post-image { max-width:100%; border-radius:8px; margin-top:12px; display:block; }
+    .post-link { display:inline-block; margin-top:10px; color:var(--accent2); font-size:0.88rem; word-break:break-all; }
 
-    /* ── 건의함 ── */
-    .suggest-form {
-      background: var(--surface);
-      border: 1px solid var(--border);
-      border-radius: 16px;
-      padding: 32px;
-      max-width: 600px;
-      margin-bottom: 48px;
-    }
-    .suggest-form h3 { margin-bottom: 20px; font-size: 1rem; }
-    .suggest-list { display: flex; flex-direction: column; gap: 20px; }
-    .suggest-card {
-      background: var(--surface);
-      border: 1px solid var(--border);
-      border-radius: 12px;
-      padding: 24px;
-    }
-    .suggest-q { font-size: 0.95rem; margin-bottom: 6px; }
-    .suggest-status {
-      display: inline-block;
-      font-size: 0.75rem;
-      padding: 3px 10px;
-      border-radius: 99px;
-      margin-bottom: 12px;
-    }
-    .status-pending { background: rgba(251,191,36,0.15); color: #fbbf24; }
-    .status-answered { background: rgba(52,211,153,0.15); color: #34d399; }
-    .suggest-answer {
-      background: rgba(167,139,250,0.08);
-      border-left: 3px solid var(--accent);
-      padding: 12px 16px;
-      border-radius: 0 8px 8px 0;
-      font-size: 0.88rem;
-      line-height: 1.7;
-      color: var(--muted);
-    }
-    .suggest-answer strong { color: var(--accent); display: block; margin-bottom: 4px; font-size: 0.8rem; }
+    /* 투표 */
+    .poll-card { background:var(--surface); border:1px solid var(--border); border-radius:16px; padding:28px 32px; margin-bottom:20px; }
+    .poll-question { font-size:1.05rem; font-weight:600; margin-bottom:16px; }
+    .poll-options { display:flex; flex-direction:column; gap:10px; }
+    .poll-option-row { display:flex; align-items:center; gap:10px; }
+    .poll-option-btn { flex:1; background:var(--bg); border:1px solid var(--border); border-radius:8px; padding:10px 16px; color:var(--text); font-family:inherit; font-size:0.9rem; cursor:pointer; text-align:left; transition:all 0.2s; position:relative; overflow:hidden; }
+    .poll-option-btn:hover { border-color:var(--accent); }
+    .poll-option-btn.voted { border-color:var(--accent); background:rgba(167,139,250,0.08); }
+    .poll-bar { position:absolute; left:0; top:0; bottom:0; background:rgba(167,139,250,0.15); transition:width 0.5s; border-radius:8px; }
+    .poll-label { position:relative; z-index:1; }
+    .poll-count { font-size:0.8rem; color:var(--muted); min-width:50px; }
+    .poll-meta { font-size:0.78rem; color:var(--muted); margin-top:12px; }
 
-    /* 관리자 패널 */
-    .admin-panel {
-      display: none;
-      background: var(--surface2);
-      border: 1px solid var(--accent);
-      border-radius: 12px;
-      padding: 24px;
-      margin-top: 16px;
-    }
-    .admin-panel.open { display: block; }
-    .admin-suggest-item {
-      background: var(--bg);
-      border-radius: 8px;
-      padding: 16px;
-      margin-bottom: 16px;
-    }
-    .admin-suggest-item p { font-size: 0.9rem; margin-bottom: 10px; }
+    /* 건의함 */
+    .suggest-form { background:var(--surface); border:1px solid var(--border); border-radius:16px; padding:32px; max-width:600px; margin-bottom:48px; }
+    .suggest-form h3 { margin-bottom:20px; font-size:1rem; }
+    .suggest-list { display:flex; flex-direction:column; gap:20px; }
+    .suggest-card { background:var(--surface); border:1px solid var(--border); border-radius:12px; padding:24px; }
+    .suggest-header { display:flex; justify-content:space-between; align-items:flex-start; }
+    .suggest-q { font-size:0.95rem; margin-bottom:6px; }
+    .suggest-status { display:inline-block; font-size:0.75rem; padding:3px 10px; border-radius:99px; margin-bottom:12px; }
+    .status-answered { background:rgba(52,211,153,0.15); color:#34d399; }
+    .suggest-answer { background:rgba(167,139,250,0.08); border-left:3px solid var(--accent); padding:12px 16px; border-radius:0 8px 8px 0; font-size:0.88rem; line-height:1.7; color:var(--muted); }
+    .suggest-answer strong { color:var(--accent); display:block; margin-bottom:4px; font-size:0.8rem; }
+    .suggest-image { max-width:100%; border-radius:8px; margin-top:10px; display:block; }
+    .suggest-link { display:inline-block; margin-top:8px; color:var(--accent2); font-size:0.88rem; word-break:break-all; }
 
-    /* ── 푸터 ── */
-    footer {
-      position: relative;
-      z-index: 1;
-      text-align: center;
-      padding: 40px;
-      border-top: 1px solid var(--border);
-      color: var(--muted);
-      font-size: 0.85rem;
-    }
+    .admin-panel { display:none; background:var(--surface2); border:1px solid var(--accent); border-radius:12px; padding:24px; margin-top:16px; margin-bottom:32px; }
+    .admin-panel.open { display:block; }
+    .admin-suggest-item { background:var(--bg); border-radius:8px; padding:16px; margin-bottom:16px; }
+    .admin-suggest-item p { font-size:0.9rem; margin-bottom:10px; }
 
-    /* ── 알림 토스트 ── */
-    #toast {
-      position: fixed;
-      bottom: 32px; right: 32px;
-      background: var(--accent);
-      color: #0d0520;
-      font-weight: 600;
-      padding: 12px 24px;
-      border-radius: 8px;
-      font-size: 0.9rem;
-      z-index: 999;
-      opacity: 0;
-      transform: translateY(10px);
-      transition: all 0.3s;
-      pointer-events: none;
+    /* 맨 위로 버튼 */
+    #backToTop {
+      position:fixed; bottom:32px; left:32px; z-index:200;
+      width:52px; height:52px; border-radius:50%;
+      background:var(--accent); color:#0d0520; border:none;
+      font-size:1.3rem; cursor:pointer; box-shadow:var(--glow);
+      display:flex; align-items:center; justify-content:center;
+      transition:all 0.3s; opacity:0; pointer-events:none;
     }
-    #toast.show { opacity: 1; transform: translateY(0); }
+    #backToTop.show { opacity:1; pointer-events:auto; }
+    #backToTop:hover { transform:translateY(-3px); box-shadow:0 0 30px rgba(167,139,250,0.5); }
 
-    /* ── 스크롤 애니메이션 ── */
-    .fade-in {
-      opacity: 0;
-      transform: translateY(20px);
-      transition: opacity 0.6s, transform 0.6s;
-    }
-    .fade-in.visible { opacity: 1; transform: translateY(0); }
+    footer { position:relative; z-index:1; text-align:center; padding:40px; border-top:1px solid var(--border); color:var(--muted); font-size:0.85rem; }
+
+    #toast { position:fixed; bottom:32px; right:32px; background:var(--accent); color:#0d0520; font-weight:600; padding:12px 24px; border-radius:8px; font-size:0.9rem; z-index:999; opacity:0; transform:translateY(10px); transition:all 0.3s; pointer-events:none; }
+    #toast.show { opacity:1; transform:translateY(0); }
+
+    .fade-in { opacity:0; transform:translateY(20px); transition:opacity 0.6s, transform 0.6s; }
+    .fade-in.visible { opacity:1; transform:translateY(0); }
+
+    .file-label { display:inline-flex; align-items:center; gap:6px; background:var(--surface2); border:1px dashed var(--border); border-radius:8px; padding:8px 16px; color:var(--muted); font-size:0.85rem; cursor:pointer; transition:all 0.2s; }
+    .file-label:hover { border-color:var(--accent); color:var(--accent); }
+    input[type="file"] { display:none; }
+    .preview-img { max-width:200px; border-radius:8px; margin-top:8px; display:none; }
   </style>
 </head>
 <body>
 
 <canvas id="stars-canvas"></canvas>
 
-<!-- ── 네비게이션 ── -->
+<!--  맨 위로 버튼 -->
+<button id="backToTop" onclick="window.scrollTo({top:0,behavior:'smooth'})" title="처음으로 ↑">🔝</button>
+
+<!-- 네비게이션 -->
 <nav>
-  <div class="nav-logo">✦ 은하<span>학생회</span></div>
+  <!--메뉴바-->
+  <div class="nav-logo">✦ 은하<span>학생회</span> ✦</div>
   <ul class="nav-links">
     <li><a href="#intro">학생회 소개</a></li>
     <li><a href="#board">게시판</a></li>
@@ -401,177 +226,224 @@
   </ul>
 </nav>
 
-<!-- ── 히어로 ── -->
+<!-- 히어로 -->
 <section id="home">
-  <div class="hero-badge">✦ 2026년도 성심여자고등학교</div>
-  <h1 class="hero-title">
-    은하<br><span class="galaxy">학생회</span>
-  </h1>
-  <p class="hero-desc">
-    학생 여러분과 함께 성장하는 은하학생회가 되겠습니다.
-  </p>
+  <div class="hero-badge">2026년도 성심여자고등학교</div>
+  <h1 class="hero-title">은하<br><span class="galaxy">학생회</span></h1>
+  <p class="hero-desc">학생 여러분과 함께 성장하는 은하학생회가 되겠습니다.</p>
+  <!-- 버튼 3개 -->
   <div class="hero-buttons">
     <button class="btn btn-primary" onclick="scrollToSection('intro')">학생회 소개 보기</button>
-    <button class="btn btn-outline" onclick="scrollToSection('suggest')">건의하기</button>
+    <button class="btn btn-primary" onclick="scrollToSection('board')">게시판</button>
+    <button class="btn btn-primary" onclick="scrollToSection('suggest')">건의하기</button>
   </div>
 </section>
 
-<!-- ── 학생회 소개 ── -->
+<!-- 학생회 소개 -->
 <section id="intro" class="fade-in">
   <p class="section-title">학생회 소개</p>
-  <p class="section-sub">은하학생회 임원들을 소개합니다.</p>
+  <p class="section-sub">은하학생회 의미,임원 소개,공약 소개</p>
   <div class="divider"></div>
-
   <div class="tab-bar">
-    <button class="tab-btn active" onclick="switchTab('officers')">👤 임원 소개</button>
+    <button class="tab-btn active" onclick="switchTab('meaning')">✨ 은하학생회 의미</button>
+    <button class="tab-btn" onclick="switchTab('officers')">👤 임원 소개</button>
     <button class="tab-btn" onclick="switchTab('promises')">📋 공약 소개</button>
   </div>
 
+  <!-- 은하학생회 의미 탭 -->
+  <div id="tab-meaning" class="tab-panel active">
+    <p style="font-size:1rem; line-height:2; color:var(--muted);">
+      은하학생회는 학생 한 명 한 명이 모두 별이라는 생각에서 출발했습니다. <br>은하는 별들에게 빛날 자리를 제공해주는 존재이며 빛나는 별들의 모임입니다.<br>저희는 학교를 모든 별, 즉 학생들이 자신의 빛을 발할 수 있는 공간인 은하처럼 만들고자 합니다. <br>학생회로서 학생들에게 더 즐겁고 편리한 학교 생활을 만들어주고 나아가 학생들이 학교를 더 좋아하도록 만드는 것이 은하학생회의 목표입니다.
+    </p>
+  </div>
+
   <!-- 임원 소개 탭 -->
-  <div id="tab-officers" class="tab-panel active">
-    <div class="officer-grid">
-      <!-- ✏️ 여기에 임원 카드를 추가하면 돼. 아래 카드를 복사해서 늘리면 됨! -->
+  <div id="tab-officers" class="tab-panel">
+      <div class="officer-grid">
       <div class="officer-card">
         <div class="officer-avatar">🌟</div>
-        <p class="officer-role">학생회장</p>
-        <p class="officer-name">강가림</p>
-        <p class="officer-desc">학교 생활이 힘들 때도 즐거울 때도 항상 여러분 곁에 있는 학생회장이 되겠습니다.</p>
+        <div class="officer-info">
+          <p class="officer-role">학생회장</p>
+          <p class="officer-name">강가림</p>
+          <p class="officer-desc">학교 생활이 힘들 때도 즐거울 때도 항상 여러분 곁에 있는 <br>학생회장이 되겠습니다.</p>
+        </div>
       </div>
       <div class="officer-card">
         <div class="officer-avatar">⭐</div>
-        <p class="officer-role">학생부회장</p>
-        <p class="officer-name">송다인</p>
-        <p class="officer-desc">한마디 </p>
+        <div class="officer-info">
+          <p class="officer-role">학생부회장</p>
+          <p class="officer-name">송다인</p>
+          <p class="officer-desc">한마디</p>
+        </div>
+      </div>
+      <div class="officer-card">
+        <div class="officer-avatar">✨</div>
+        <div class="officer-info">
+          <p class="officer-role">기획부 부장</p>
+          <p class="officer-name">신다형</p>
+          <p class="officer-desc">한마디</p>
+        </div>
       </div>
       <div class="officer-card">
         <div class="officer-avatar">💫</div>
-        <p class="officer-role">기획부 부장</p>
-        <p class="officer-name">신다형</p>
-        <p class="officer-desc">한마디</p>
+        <div class="officer-info">
+          <p class="officer-role">기획부 부원</p>
+          <p class="officer-name">권재은</p>
+          <p class="officer-desc">한마디</p>
+        </div>
       </div>
       <div class="officer-card">
-        <div class="officer-avatar">🌙</div>
-        <p class="officer-role">기획부 부원</p>
-        <p class="officer-name">권재은</p>
-        <p class="officer-desc">한마디</p>
+        <div class="officer-avatar">✨</div>
+        <div class="officer-info">
+          <p class="officer-role">홍보자료부 부장</p>
+          <p class="officer-name">최아리</p>
+          <p class="officer-desc">한마디</p>
+        </div>
       </div>
       <div class="officer-card">
-        <div class="officer-avatar">💫</div>
-        <p class="officer-role">홍보자료부 부장</p>
-        <p class="officer-name">최아리</p>
-        <p class="officer-desc">한마디</p>
-      </div>
-      <div class="officer-card">
-        <div class="officer-avatar">💫</div>
-        <p class="officer-role">문화생활부 부장</p>
-        <p class="officer-name">노현서</p>
-        <p class="officer-desc">한마디</p>
-      </div>
-      <div class="officer-card">
-        <div class="officer-avatar">🌙</div>
-        <p class="officer-role">문화생활부 부원</p>
-        <p class="officer-name">한규원</p>
-        <p class="officer-desc">은하학생회의 귀염을 담당하고 있습니다.</p>
+        <div class="officer-avatar">✨</div>
+        <div class="officer-info">
+          <p class="officer-role">문화생활부 부장</p>
+          <p class="officer-name">노현서</p>
+          <p class="officer-desc">여러분이 재밌고 편안한 학교 생활을 할 수 있도록 열심히 노력하겠습니다!</p>
+        </div>
       </div>
       <div class="officer-card">
         <div class="officer-avatar">💫</div>
-        <p class="officer-role">복지부 부장</p>
-        <p class="officer-name">황신아</p>
-        <p class="officer-desc">한마디</p>
+        <div class="officer-info">
+          <p class="officer-role">문화생활부 부원</p>
+          <p class="officer-name">한규원</p>
+          <p class="officer-desc">은하학생회의 귀염을 담당하고 있습니다.</p>
+        </div>
+      </div>
+      <div class="officer-card">
+        <div class="officer-avatar">✨</div>
+        <div class="officer-info">
+          <p class="officer-role">복지부 부장</p>
+          <p class="officer-name">황신아</p>
+          <p class="officer-desc">학생들과 소통하는 학생회 임원이 되겠습니다!</p>
+        </div>
       </div>
     </div>
   </div>
 
-  <!-- 공약 소개 탭 -->
+  <!-- 공약 소개 -->
   <div id="tab-promises" class="tab-panel">
     <div class="promise-list">
-      <!-- ✏️ 여기에 공약을 추가하면 돼. 숫자(01, 02...)와 제목, 내용을 바꿔줘! -->
       <div class="promise-card">
-        <span class="promise-num">01</span>
+        <div class="promise-icon">🎮</div>
         <div>
           <p class="promise-title">다양한 이벤트 진행</p>
-          <p class="promise-body">목적: 학생들에게 즐거운 학교 생활을 통해 좋은 추억을 만들어주기 위함<br>한 학기에 한 번 이상 진행 예정<br>내용<br>e스포츠대회: 학생들이 팀으로 게임을 하는 대회, 협동심과 공동체 의식 신장.<br>텀블러 이벤트: 개인 텀블러를 가져오는 학생들에게 음료를 무료로 제공하는 환경 캠페인.<br>일회용 컵 사용을 줄여 환경 보호에 동참하는 경험 제공. </p>
+          <p class="promise-body">모두에게 즐거운 학교생활을 통해 좋은 추억을 만들어주고자 하는 공약<br>한학기에 한번 이상, e스포츠대회, 텀블러 이벤트 등 진행 예정<br>e스포츠대회: 학생들이 팀을 이루어 온라인 게임을 플레이하고 이를 중계하여 전교의 협동심을 기르는 이벤트<br>텀블러 이벤트: 개인 텀블러를 가져오는 학생들에게 음료를 무료로 제공하며 환경보호에 동참하는 기회를 제공하는 이벤트</p>
         </div>
       </div>
       <div class="promise-card">
-        <span class="promise-num">02</span>
+        <div class="promise-icon">🌐</div>
         <div>
           <p class="promise-title">학생회 웹 운영</p>
-          <p class="promise-body">목적: 학생들이 정보에 쉽게 접근, 효율적으로 학생 복지 운영을 진행하기 위함<br>내용<br>학생회 홈페이지: 학생회 활동 내역, 공지사항 등을 투명하게 공개,학생들이 쉽게 접할 수 있도록 함<br>우산 대여 온라인 시스템: 우산 대여 및 반납 과정을 간편하고 효율적으로 관리<br>온라인 건의함: 학생들이 자유롭게 의견을 제시할 수 있도록 함. </p>
+          <p class="promise-body">학생들이 학생회 관련 정보에 쉽게 접근할 수 있게 하여 효율적인 학생 복지를 실현하고자 하는 공약<br>학생회 홈페이지: 학생회 활동 내역, 공지사항 등을 웹상에서 쉽게 접근할 수 있게 함은 물론 건의사항을 온라인상에서 편하게 제시할 수 있도록 만들기 위한 공간인 학생회 홈페이지 개설<br>우산 대여 온라인 시스템: 우산 대여 및 반납 과정을 간편하고 효율적으로 관리하기 위한 우산 대여 온라인 시스템 도입</p>
         </div>
       </div>
       <div class="promise-card">
-        <span class="promise-num">03</span>
+        <div class="promise-icon">📣</div>
         <div>
           <p class="promise-title">학생회 홍보활동 강화</p>
-          <p class="promise-body">목적: 학생회 활동 홍보에 대한 관심과 참여를 높이기 위함<br>내용<br>학생회 공식 인스타를 적극적으로 활용하여 활동 정보를 신속하고 재미있게 전달<br>학년 게시판 활성화를 통한 학생회 이벤트 공유 및 홍보, 학년 내 소통 창구로 활용<br>온라인 뿐만 아니라 오프라인에서도 정보를 공유할 수 있게 함. </p>
+          <p class="promise-body">학생회 활동 홍보에 대한 관심과 참여를 높이고자 하는 공약<br>학생회 인스타그램 활성화: 학생회 활동 정보를 학생들이 접근하기 쉬운 공간에서 신속하고 재미있게 전달하기 위해 학생회 인스타그램 활성화<br>학년 게시판 활성화: 학생회 이벤트 공유 및 홍보, 학년 내 소통 창구 확보를 위한 학년게시판 활성화</p>
         </div>
       </div>
       <div class="promise-card">
-        <span class="promise-num">04</span>
+        <div class="promise-icon">💝</div>
         <div>
           <p class="promise-title">기존 학생회 공약 유지</p>
-          <p class="promise-body">목적: 만족도가 높았던 기존 학생회의 공약을 유지하여 학생들의 긍정적 반응을 지속하기 위함<br>내용<br>나리제 찬조공연 모집 공약 유지<br>생리대 배치 공약 유지</p>
+          <p class="promise-body">만족도가 높았던 기존 학생회의 공약을 유지하여 학생들의 긍정적 반응을 지속시키고자 하는 공약<br>나리제 찬조공연 모집 공약 유지<br>생리대 비치 공약 유지</p>
         </div>
       </div>
       <div class="promise-card">
-        <span class="promise-num">05</span>
+        <div class="promise-icon">🏆</div>
         <div>
           <p class="promise-title">학생 주도 사업공모전</p>
-          <p class="promise-body">목적: 학생들이 주도적으로 사업을 기획, 추진하며 사업 기획 경험 및 운영 경험을 제공,학생 개개인의 책임감을 증진시키기 위해<br>내용<br>학생들이 사업 계획서를 제출하면 심사를 통해 학생회가 사업 선정<br>사업이 선정된 팀은 주어진 예산을 통해 사업계획서에 따라 사업을 운영하는 시스템</p>
+          <p class="promise-body">학생들이 주도적으로 사업을 기획, 추진하면서 사업 기획 및 운영 경험을 얻고 책임감을 기를 수 있게 돕고자 하는 공약<br>학생들을 대상으로 사업계획서 공모 후 학생회가 심사를 거쳐 사업을 선정, 사업이 선정된 팀은 사업계획서에 적어낸 사업을 주어진 예산을 통해 운영</p>
         </div>
       </div>
     </div>
   </div>
 </section>
 
-<!-- ── 게시판 ── -->
+<!-- 게시판 -->
 <section id="board" class="fade-in">
   <p class="section-title">학생회 게시판</p>
   <p class="section-sub">학생회 활동 내역과 공지사항을 확인하세요.</p>
   <div class="divider"></div>
 
-  <!-- 관리자 로그인 -->
   <div class="admin-login-box" id="loginBox">
     <h3>🔐 관리자 글쓰기</h3>
-    <div class="form-row" style="align-items:center;"> 
+    <div class="form-row" style="align-items:center;">
       <input class="form-input" type="password" id="boardPw" placeholder="관리자 비밀번호" style="min-width:0;" />
       <button class="btn btn-primary" onclick="loginBoard()" style="white-space:nowrap;flex-shrink:0;">확인</button>
     </div>
   </div>
 
-  <!-- 글쓰기 폼 (로그인 후 보임) -->
+  <!-- 글쓰기 폼 -->
   <div id="writeForm" style="display:none; margin-bottom:40px;">
     <div class="admin-login-box" style="max-width:100%;">
       <h3>✍️ 새 글 작성</h3>
       <input class="form-input" id="postTitle" placeholder="제목" style="width:100%; margin-bottom:12px;" />
-      <textarea class="form-input" id="postBody" placeholder="내용을 입력해줘" style="width:100%;"></textarea>
-      <div style="margin-top:12px; display:flex; gap:10px;">
+      <textarea class="form-input" id="postBody" placeholder="내용을 입력해주세요" style="width:100%; margin-bottom:12px;"></textarea>
+      <input class="form-input" id="postLink" placeholder="🔗 링크 " style="width:100%; margin-bottom:12px;" />
+      <div style="margin-bottom:12px;">
+        <label class="file-label" for="postImage">📷 사진 첨부</label>
+        <input type="file" id="postImage" accept="image/*" onchange="previewImage('postImage','postImagePreview')" />
+        <img id="postImagePreview" class="preview-img" />
+      </div>
+      <div style="margin-top:4px; display:flex; gap:10px;">
         <button class="btn btn-primary" onclick="submitPost()">등록하기</button>
         <button class="btn btn-outline" onclick="logoutBoard()">로그아웃</button>
       </div>
     </div>
   </div>
 
-  <!-- 게시글 목록 -->
+  <!-- 여론 투표 -->
+  <div style="margin-bottom:48px;">
+    <h3 style="font-size:1rem; margin-bottom:20px; color:var(--muted);">📊 여론 투표</h3>
+    <div id="pollWriteForm" style="display:none; margin-bottom:24px;">
+      <div class="admin-login-box" style="max-width:100%;">
+        <h3>📊 새 투표 만들기</h3>
+        <input class="form-input" id="pollQuestion" placeholder="투표 질문을 입력하세요" style="width:100%; margin-bottom:10px;" />
+        <input class="form-input" id="pollOpt1" placeholder="선택지 1" style="width:100%; margin-bottom:8px;" />
+        <input class="form-input" id="pollOpt2" placeholder="선택지 2" style="width:100%; margin-bottom:8px;" />
+        <input class="form-input" id="pollOpt3" placeholder="선택지 3 (선택사항)" style="width:100%; margin-bottom:8px;" />
+        <input class="form-input" id="pollOpt4" placeholder="선택지 4 (선택사항)" style="width:100%; margin-bottom:12px;" />
+        <button class="btn btn-primary" onclick="submitPoll()">투표 생성하기</button>
+      </div>
+    </div>
+    <div id="pollList"></div>
+    <p id="noPolls" style="color:var(--muted); font-size:0.9rem;">아직 진행 중인 투표가 없어요.</p>
+  </div>
+
+  <h3 style="font-size:1rem; margin-bottom:20px; color:var(--muted);">📌 공지 & 활동 내역</h3>
   <div class="post-list" id="postList"></div>
   <p id="noPosts" style="color:var(--muted); font-size:0.9rem;">아직 게시글이 없어요.</p>
 </section>
 
-<!-- ── 건의함 ── -->
+<!-- 건의함 -->
 <section id="suggest" class="fade-in">
   <p class="section-title">건의함</p>
   <p class="section-sub">학교생활에 대한 건의사항을 자유롭게 남겨주세요. 관리자가 검토 후 답변드립니다.</p>
   <div class="divider"></div>
 
-  <!-- 건의 작성 폼 -->
+  <!-- 건의함 -->
   <div class="suggest-form">
     <h3>건의하기</h3>
     <textarea class="form-input" id="suggestText" placeholder="건의 내용을 자유롭게 작성해주세요." style="width:100%; margin-bottom:12px;"></textarea>
+    <input class="form-input" id="suggestLink" placeholder="🔗 링크" style="width:100%; margin-bottom:12px;" />
+    <div style="margin-bottom:16px;">
+      <label class="file-label" for="suggestImage">📷 사진 첨부</label>
+      <input type="file" id="suggestImage" accept="image/*" onchange="previewImage('suggestImage','suggestImagePreview')" />
+      <img id="suggestImagePreview" class="preview-img" />
+    </div>
     <button class="btn btn-primary" onclick="submitSuggest()">건의 제출하기</button>
   </div>
 
-  <!-- 관리자 로그인 (건의함) -->
   <div style="margin-bottom:24px;">
     <div style="display:flex; gap:10px; align-items:center;">
       <input class="form-input" type="password" id="suggestPw" placeholder="관리자 비밀번호" style="max-width:220px;" />
@@ -579,13 +451,11 @@
     </div>
   </div>
 
-  <!-- 관리자 패널 (로그인 후 보임) -->
   <div class="admin-panel" id="suggestAdmin">
     <p style="font-size:0.9rem; margin-bottom:16px; color:var(--accent);">🔐 관리자 모드 — 건의 내용 보기 & 답변</p>
     <div id="adminSuggestList"></div>
   </div>
 
-  <!-- 공개 건의함 목록 (답변 완료된 것만) -->
   <div>
     <h3 style="font-size:1rem; margin-bottom:20px; color:var(--muted);">📬 답변 완료된 건의</h3>
     <div class="suggest-list" id="publicSuggestList"></div>
@@ -593,185 +463,243 @@
   </div>
 </section>
 
-<!-- ── 푸터 ── -->
+<!-- 푸터 -->
 <footer>
-  <p style="color:var(--accent); font-family:'Noto Serif KR',serif; margin-bottom:8px;">✦ 은하학생회</p>
-  <p>문의 인스타: @galaxysc.26 </p>
+  <p style="color:var(--accent); font-family:'Noto Serif KR',serif; margin-bottom:8px;">✦ 은하학생회 ✦</p>
+  <p>문의 인스타: @galaxysc.26</p>
 </footer>
 
 <div id="toast"></div>
 
 <script>
-  // ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-  // ✏️ 관리자 비밀번호를 여기서 바꿔줘!
   const ADMIN_PASSWORD = "0414";
-  // ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 
-  // ── 별 배경 ──
+  // 별 배경
   const canvas = document.getElementById('stars-canvas');
   const ctx = canvas.getContext('2d');
   let stars = [];
-
-  function resizeCanvas() {
-    canvas.width = window.innerWidth;
-    canvas.height = window.innerHeight;
-  }
-
+  function resizeCanvas() { canvas.width = window.innerWidth; canvas.height = window.innerHeight; }
   function initStars() {
     stars = [];
     for (let i = 0; i < 180; i++) {
-      stars.push({
-        x: Math.random() * canvas.width,
-        y: Math.random() * canvas.height,
-        r: Math.random() * 1.5 + 0.3,
-        a: Math.random(),
-        speed: Math.random() * 0.005 + 0.002
-      });
+      stars.push({ x: Math.random()*canvas.width, y: Math.random()*canvas.height, r: Math.random()*1.5+0.3, a: Math.random(), speed: Math.random()*0.005+0.002 });
     }
   }
-
   function drawStars() {
-    ctx.clearRect(0, 0, canvas.width, canvas.height);
+    ctx.clearRect(0,0,canvas.width,canvas.height);
     stars.forEach(s => {
       s.a += s.speed;
-      const alpha = (Math.sin(s.a) + 1) / 2 * 0.8 + 0.1;
-      ctx.beginPath();
-      ctx.arc(s.x, s.y, s.r, 0, Math.PI * 2);
-      ctx.fillStyle = `rgba(224,231,255,${alpha})`;
-      ctx.fill();
+      const alpha = (Math.sin(s.a)+1)/2*0.8+0.1;
+      ctx.beginPath(); ctx.arc(s.x,s.y,s.r,0,Math.PI*2);
+      ctx.fillStyle = `rgba(224,231,255,${alpha})`; ctx.fill();
     });
     requestAnimationFrame(drawStars);
   }
-
   resizeCanvas(); initStars(); drawStars();
   window.addEventListener('resize', () => { resizeCanvas(); initStars(); });
 
-  // ── 네비게이션 스크롤 ──
-  function scrollToSection(id) {
-    document.getElementById(id).scrollIntoView({ behavior: 'smooth' });
-  }
+  // 맨 위로 버튼
+  const backBtn = document.getElementById('backToTop');
+  window.addEventListener('scroll', () => { backBtn.classList.toggle('show', window.scrollY > 300); });
+
+  function scrollToSection(id) { document.getElementById(id).scrollIntoView({ behavior: 'smooth' }); }
   document.querySelectorAll('a[href^="#"]').forEach(a => {
     a.addEventListener('click', e => {
       e.preventDefault();
-      const id = a.getAttribute('href').slice(1);
-      document.getElementById(id)?.scrollIntoView({ behavior: 'smooth' });
+      document.getElementById(a.getAttribute('href').slice(1))?.scrollIntoView({ behavior: 'smooth' });
     });
   });
 
-  // ── 탭 전환 ──
   function switchTab(tab) {
     document.querySelectorAll('.tab-panel').forEach(p => p.classList.remove('active'));
     document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
-    document.getElementById('tab-' + tab).classList.add('active');
+    document.getElementById('tab-'+tab).classList.add('active');
     event.currentTarget.classList.add('active');
   }
 
-  // ── 토스트 알림 ──
   function showToast(msg) {
     const t = document.getElementById('toast');
-    t.textContent = msg;
-    t.classList.add('show');
+    t.textContent = msg; t.classList.add('show');
     setTimeout(() => t.classList.remove('show'), 2500);
   }
 
-  // ── 스크롤 fade-in ──
   const obs = new IntersectionObserver(entries => {
     entries.forEach(e => { if (e.isIntersecting) e.target.classList.add('visible'); });
   }, { threshold: 0.1 });
   document.querySelectorAll('.fade-in').forEach(el => obs.observe(el));
 
-  // ━━━━━━━━━━━━━━━━━━━
-  // 게시판 기능
-  // ━━━━━━━━━━━━━━━━━━━
-  let posts = JSON.parse(localStorage.getItem('galaxy_posts') || '[]');
+  // 이미지 미리보기
+  function previewImage(inputId, previewId) {
+    const file = document.getElementById(inputId).files[0];
+    const preview = document.getElementById(previewId);
+    if (!file) { preview.style.display='none'; return; }
+    const reader = new FileReader();
+    reader.onload = e => { preview.src = e.target.result; preview.style.display = 'block'; };
+    reader.readAsDataURL(file);
+  }
+  function readImageAsBase64(inputId) {
+    return new Promise(resolve => {
+      const file = document.getElementById(inputId).files[0];
+      if (!file) { resolve(''); return; }
+      const reader = new FileReader();
+      reader.onload = e => resolve(e.target.result);
+      reader.readAsDataURL(file);
+    });
+  }
+
+  // 초기 상태
+  window._postsData = {}; window._suggestsData = {}; window._pollsData = {};
   let boardLoggedIn = false;
+  let suggestLoggedIn = false;
 
-  function savePosts() { localStorage.setItem('galaxy_posts', JSON.stringify(posts)); }
-
+  // ── 게시판 ──
   function loginBoard() {
     const pw = document.getElementById('boardPw').value;
     if (pw === ADMIN_PASSWORD) {
       boardLoggedIn = true;
       document.getElementById('loginBox').style.display = 'none';
       document.getElementById('writeForm').style.display = 'block';
+      document.getElementById('pollWriteForm').style.display = 'block';
       showToast('관리자 로그인 되었습니다.');
-    } else {
-      showToast('비밀번호가 틀렸습니다.');
-    }
+      renderPosts();
+    } else { showToast('비밀번호가 틀렸습니다.'); }
   }
-
   function logoutBoard() {
     boardLoggedIn = false;
     document.getElementById('loginBox').style.display = 'block';
     document.getElementById('writeForm').style.display = 'none';
+    document.getElementById('pollWriteForm').style.display = 'none';
     document.getElementById('boardPw').value = '';
+    renderPosts();
   }
-
-  function submitPost() {
+  async function submitPost() {
     const title = document.getElementById('postTitle').value.trim();
     const body = document.getElementById('postBody').value.trim();
+    const link = document.getElementById('postLink').value.trim();
     if (!title || !body) { showToast('제목과 내용을 모두 입력해주세요.'); return; }
+    const image = await readImageAsBase64('postImage');
     const now = new Date();
-    posts.unshift({
-      id: Date.now(),
-      title, body,
-      date: now.toLocaleDateString('ko-KR') + ' ' + now.toLocaleTimeString('ko-KR', {hour:'2-digit', minute:'2-digit'})
+    window._push(window._postsRef, {
+      title, body, link, image,
+      date: now.toLocaleDateString('ko-KR')+' '+now.toLocaleTimeString('ko-KR',{hour:'2-digit',minute:'2-digit'})
     });
-    savePosts();
-    renderPosts();
     document.getElementById('postTitle').value = '';
     document.getElementById('postBody').value = '';
+    document.getElementById('postLink').value = '';
+    document.getElementById('postImage').value = '';
+    document.getElementById('postImagePreview').style.display = 'none';
     showToast('게시글이 등록되었습니다!');
   }
-
-  function renderPosts() {
+  function deletePost(key) {
+    if (!confirm('정말 삭제할까요?')) return;
+    window._remove(window._ref(window._db, 'posts/'+key));
+    showToast('삭제되었습니다.');
+  }
+  window.renderPosts = function() {
+    const data = window._postsData || {};
+    const entries = Object.entries(data).reverse();
     const list = document.getElementById('postList');
     const empty = document.getElementById('noPosts');
-    if (posts.length === 0) { list.innerHTML = ''; empty.style.display = 'block'; return; }
+    if (entries.length === 0) { list.innerHTML=''; empty.style.display='block'; return; }
     empty.style.display = 'none';
-    list.innerHTML = posts.map((p, i) => `
-      <div class="post-card" onclick="togglePost(${i})">
-        <p class="post-meta">${p.date}</p>
-        <p class="post-title">${p.title}</p>
-        <p class="post-preview">${p.body.slice(0, 60)}${p.body.length > 60 ? '...' : ''}</p>
-        <div class="post-detail" id="post-detail-${i}">
-          <div class="post-detail-body">${p.body.replace(/\n/g, '<br>')}</div>
+    list.innerHTML = entries.map(([key, p], i) => `
+      <div class="post-card">
+        <div class="post-header" onclick="togglePost('pd-${i}')">
+          <div>
+            <p class="post-meta">${p.date}</p>
+            <p class="post-title">${p.title}</p>
+            <p class="post-preview">${p.body.slice(0,60)}${p.body.length>60?'...':''}</p>
+          </div>
+          ${boardLoggedIn ? `<button class="btn btn-danger" onclick="event.stopPropagation();deletePost('${key}')">🗑 삭제</button>` : ''}
+        </div>
+        <div class="post-detail" id="pd-${i}">
+          <div class="post-detail-body">
+            ${p.body.replace(/\n/g,'<br>')}
+            ${p.image ? `<img src="${p.image}" class="post-image" />` : ''}
+            ${p.link ? `<a href="${p.link}" target="_blank" class="post-link">🔗 ${p.link}</a>` : ''}
+          </div>
         </div>
       </div>
     `).join('');
+  };
+  function togglePost(id) { document.getElementById(id).classList.toggle('open'); }
+
+  // ── 투표 ──
+  function submitPoll() {
+    const q = document.getElementById('pollQuestion').value.trim();
+    const opts = ['pollOpt1','pollOpt2','pollOpt3','pollOpt4'].map(id => document.getElementById(id).value.trim()).filter(o=>o);
+    if (!q || opts.length < 2) { showToast('질문과 선택지를 2개 이상 입력해주세요.'); return; }
+    window._push(window._pollsRef, { question:q, options:opts, votes:opts.map(()=>0), date:new Date().toLocaleDateString('ko-KR') });
+    document.getElementById('pollQuestion').value='';
+    ['pollOpt1','pollOpt2','pollOpt3','pollOpt4'].forEach(id => document.getElementById(id).value='');
+    showToast('투표가 생성되었습니다!');
   }
-
-  function togglePost(i) {
-    const el = document.getElementById('post-detail-' + i);
-    el.classList.toggle('open');
+  function votePoll(key, optIdx) {
+    const voted = JSON.parse(localStorage.getItem('galaxy_voted')||'{}');
+    if (voted[key] !== undefined) { showToast('이미 투표했습니다.'); return; }
+    const poll = (window._pollsData||{})[key];
+    if (!poll) return;
+    const votes = poll.votes || poll.options.map(()=>0);
+    votes[optIdx] = (votes[optIdx]||0)+1;
+    window._update(window._ref(window._db,'polls/'+key), { votes });
+    voted[key] = optIdx;
+    localStorage.setItem('galaxy_voted', JSON.stringify(voted));
+    showToast('투표 완료');
   }
+  function deletePoll(key) {
+    if (!confirm('정말 삭제할까요?')) return;
+    window._remove(window._ref(window._db,'polls/'+key));
+    showToast('투표가 삭제되었습니다.');
+  }
+  window.renderPolls = function() {
+    const data = window._pollsData||{};
+    const entries = Object.entries(data).reverse();
+    const list = document.getElementById('pollList');
+    const empty = document.getElementById('noPolls');
+    const voted = JSON.parse(localStorage.getItem('galaxy_voted')||'{}');
+    if (entries.length===0) { list.innerHTML=''; empty.style.display='block'; return; }
+    empty.style.display='none';
+    list.innerHTML = entries.map(([key,poll]) => {
+      const votes = poll.votes||poll.options.map(()=>0);
+      const total = votes.reduce((a,b)=>a+b,0);
+      const myVote = voted[key];
+      const hasVoted = myVote!==undefined;
+      return `<div class="poll-card">
+        <div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:4px;">
+          <p class="poll-question">📊 ${poll.question}</p>
+          ${boardLoggedIn?`<button class="btn btn-danger" onclick="deletePoll('${key}')">🗑 삭제</button>`:''}
+        </div>
+        <div class="poll-options">
+          ${poll.options.map((opt,i)=>{
+            const pct = total>0?Math.round(votes[i]/total*100):0;
+            return `<div class="poll-option-row">
+              <button class="poll-option-btn ${myVote===i?'voted':''}" onclick="${hasVoted?'':`votePoll('${key}',${i})`}" ${hasVoted&&myVote!==i?'style="cursor:default;"':''}>
+                <div class="poll-bar" style="width:${hasVoted?pct:0}%"></div>
+                <span class="poll-label">${myVote===i?'✔ ':''}${opt}${hasVoted?' ('+pct+'%)':''}</span>
+              </button>
+              <span class="poll-count">${hasVoted?votes[i]+'표':''}</span>
+            </div>`;
+          }).join('')}
+        </div>
+        <p class="poll-meta">${poll.date} · 총 ${total}표 ${hasVoted?'· 투표 완료 ':'· 클릭해서 투표하기'}</p>
+      </div>`;
+    }).join('');
+  };
 
-  renderPosts();
-
-  // ━━━━━━━━━━━━━━━━━━━
-  // 건의함 기능
-  // ━━━━━━━━━━━━━━━━━━━
-  let suggests = JSON.parse(localStorage.getItem('galaxy_suggests') || '[]');
-  let suggestLoggedIn = false;
-
-  function saveSuggests() { localStorage.setItem('galaxy_suggests', JSON.stringify(suggests)); }
-
-  function submitSuggest() {
+  // ── 건의함 ──
+  async function submitSuggest() {
     const text = document.getElementById('suggestText').value.trim();
     if (!text) { showToast('건의 내용을 입력해주세요.'); return; }
+    const link = document.getElementById('suggestLink').value.trim();
+    const image = await readImageAsBase64('suggestImage');
     const now = new Date();
-    suggests.unshift({
-      id: Date.now(),
-      text,
-      answer: '',
-      date: now.toLocaleDateString('ko-KR')
-    });
-    saveSuggests();
-    renderSuggests();
-    document.getElementById('suggestText').value = '';
+    window._push(window._suggestsRef, { text, link, image, answer:'', date:now.toLocaleDateString('ko-KR') });
+    document.getElementById('suggestText').value='';
+    document.getElementById('suggestLink').value='';
+    document.getElementById('suggestImage').value='';
+    document.getElementById('suggestImagePreview').style.display='none';
     showToast('건의가 제출되었습니다. 관리자 확인 후 답변할 예정입니다.');
   }
-
   function loginSuggest() {
     const pw = document.getElementById('suggestPw').value;
     if (pw === ADMIN_PASSWORD) {
@@ -779,59 +707,66 @@
       document.getElementById('suggestAdmin').classList.add('open');
       renderSuggests();
       showToast('관리자 모드 활성화');
-    } else {
-      showToast('비밀번호가 틀렸습니다.');
-    }
+    } else { showToast('비밀번호가 틀렸습니다.'); }
   }
-
-  function answerSuggest(id) {
-    const text = document.getElementById('answer-' + id).value.trim();
+  function answerSuggest(key) {
+    const text = document.getElementById('answer-'+key).value.trim();
     if (!text) { showToast('답변 내용을 입력하세요.'); return; }
-    const s = suggests.find(s => s.id === id);
-    if (s) { s.answer = text; saveSuggests(); renderSuggests(); showToast('답변이 등록되었습니다.'); }
+    window._update(window._ref(window._db,'suggests/'+key), { answer:text });
+    showToast('답변이 등록되었습니다.');
   }
+  function deleteSuggest(key) {
+    if (!confirm('정말 삭제할까요?')) return;
+    window._remove(window._ref(window._db,'suggests/'+key));
+    showToast('삭제되었습니다.');
+  }
+  window.renderSuggests = function() {
+    const data = window._suggestsData||{};
+    const entries = Object.entries(data).reverse();
 
-  function renderSuggests() {
-    // 관리자 패널 (전체 목록)
     if (suggestLoggedIn) {
       const adminList = document.getElementById('adminSuggestList');
-      if (suggests.length === 0) {
-        adminList.innerHTML = '<p style="color:var(--muted);font-size:0.9rem;">아직 건의사항이 없어요.</p>';
+      if (entries.length===0) {
+        adminList.innerHTML='<p style="color:var(--muted);font-size:0.9rem;">아직 건의사항이 없어요.</p>';
       } else {
-        adminList.innerHTML = suggests.map(s => `
+        adminList.innerHTML = entries.map(([key,s])=>`
           <div class="admin-suggest-item">
-            <p><strong>[${s.date}]</strong> ${s.text}</p>
+            <div style="display:flex;justify-content:space-between;align-items:flex-start;">
+              <p><strong>[${s.date}]</strong> ${s.text}</p>
+              <button class="btn btn-danger" onclick="deleteSuggest('${key}')">🗑 삭제</button>
+            </div>
+            ${s.image?`<img src="${s.image}" style="max-width:200px;border-radius:8px;margin:6px 0;"/>`:''}
+            ${s.link?`<p><a href="${s.link}" target="_blank" style="color:var(--accent2);font-size:0.85rem;">🔗 ${s.link}</a></p>`:''}
             ${s.answer
-              ? `<p style="color:var(--accent);font-size:0.85rem;">✔ 답변 완료: ${s.answer}</p>`
-              : `<div style="display:flex;gap:8px;margin-top:8px;">
-                  <input class="form-input" id="answer-${s.id}" placeholder="답변 내용 입력" style="flex:1;" />
-                  <button class="btn btn-primary" onclick="answerSuggest(${s.id})">답변</button>
-                 </div>`
+              ?`<p style="color:var(--accent);font-size:0.85rem;">✔ 답변 완료: ${s.answer}</p>`
+              :`<div style="display:flex;gap:8px;margin-top:8px;">
+                  <input class="form-input" id="answer-${key}" placeholder="답변 내용 입력" style="flex:1;" />
+                  <button class="btn btn-primary" onclick="answerSuggest('${key}')">답변</button>
+                </div>`
             }
-          </div>
-        `).join('');
+          </div>`).join('');
       }
     }
 
-    // 공개 목록 (답변 완료만)
-    const answered = suggests.filter(s => s.answer);
+    const answered = entries.filter(([,s])=>s.answer);
     const pubList = document.getElementById('publicSuggestList');
     const noEl = document.getElementById('noSuggests');
-    if (answered.length === 0) { pubList.innerHTML = ''; noEl.style.display = 'block'; return; }
-    noEl.style.display = 'none';
-    pubList.innerHTML = answered.map(s => `
+    if (answered.length===0) { pubList.innerHTML=''; noEl.style.display='block'; return; }
+    noEl.style.display='none';
+    pubList.innerHTML = answered.map(([key,s])=>`
       <div class="suggest-card">
         <p class="suggest-q">💬 ${s.text}</p>
-        <span class="suggest-status status-answered">답변 완료</span>
+        ${s.image?`<img src="${s.image}" class="suggest-image" />`:''}
+        ${s.link?`<a href="${s.link}" target="_blank" class="suggest-link">🔗 ${s.link}</a>`:''}
+        <br><span class="suggest-status status-answered">답변 완료</span>
         <div class="suggest-answer">
           <strong>✦ 은하학생회 답변</strong>
           ${s.answer}
         </div>
-      </div>
-    `).join('');
-  }
+      </div>`).join('');
+  };
 
-  renderSuggests();
+  renderPosts(); renderSuggests(); renderPolls();
 </script>
 </body>
 </html>
