@@ -6,24 +6,20 @@
   <title>은하학생회</title>
   <link href="https://fonts.googleapis.com/css2?family=Noto+Serif+KR:wght@400;700&family=Noto+Sans+KR:wght@300;400;600&display=swap" rel="stylesheet"/>
 
-  <!--Firebase SDK -->
   <script type="module">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
     import { getDatabase, ref, push, onValue, remove, update } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-database.js";
 
-    // ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-    // Firebase 콘솔
     const firebaseConfig = {
-    apiKey: "AIzaSyCeMurbwJyJA5QpQOGWQHVjZ0tkP7PKSog",
-    authDomain: "galaxy-council.firebaseapp.com",
-    databaseURL: "https://galaxy-council-default-rtdb.firebaseio.com",
-    projectId: "galaxy-council",
-    storageBucket: "galaxy-council.firebasestorage.app",
-    messagingSenderId: "1089635315923",
-    appId: "1:1089635315923:web:6756b565c0076b18dde426",
-    measurementId: "G-YLEBPLYN3Q"
+      apiKey: "AIzaSyCeMurbwJyJA5QpQOGWQHVjZ0tkP7PKSog",
+      authDomain: "galaxy-council.firebaseapp.com",
+      databaseURL: "https://galaxy-council-default-rtdb.firebaseio.com",
+      projectId: "galaxy-council",
+      storageBucket: "galaxy-council.firebasestorage.app",
+      messagingSenderId: "1089635315923",
+      appId: "1:1089635315923:web:6756b565c0076b18dde426",
+      measurementId: "G-YLEBPLYN3Q"
     };
-    // ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 
     const app = initializeApp(firebaseConfig);
     const db = getDatabase(app);
@@ -59,9 +55,7 @@
     }
     * { margin: 0; padding: 0; box-sizing: border-box; }
     body { font-family: 'Noto Sans KR', sans-serif; background: var(--bg); color: var(--text); min-height: 100vh; }
-
     #stars-canvas { position: fixed; top:0; left:0; width:100%; height:100%; pointer-events:none; z-index:0; }
-
     nav {
       position: fixed; top:0; left:0; right:0; z-index:100;
       display: flex; align-items: center; justify-content: space-between;
@@ -74,26 +68,37 @@
     .nav-links { display:flex; gap:32px; list-style:none; }
     .nav-links li a { color:var(--muted); text-decoration:none; font-size:0.92rem; transition:color 0.2s; }
     .nav-links li a:hover { color:var(--accent); }
-
+    @media (max-width: 768px) {
+  nav {
+    padding: 12px 16px;
+    flex-wrap: nowrap;
+    overflow: hidden;
+  }
+  .nav-logo {
+    font-size: 1rem;
+    white-space: nowrap;
+    flex-shrink: 0;
+  }
+  .nav-links {
+    gap: 12px;
+    flex-shrink: 1;
+    overflow: hidden;
+  }
+  .nav-links li a {
+    font-size: 0.78rem;
+    white-space: nowrap;
+  }
+}
     section { position:relative; z-index:1; padding:120px 48px 80px; max-width:1100px; margin:0 auto; }
     .section-title { font-family:'Noto Serif KR',serif; font-size:2rem; font-weight:700; color:var(--accent); margin-bottom:8px; }
     .section-sub { color:var(--muted); font-size:0.9rem; margin-bottom:48px; }
-    .divider { height:1px; background:linear-gradient(90deg,var(--accent),transparent); margin-bottom:48px; }
-
-    #home {
-      min-height:100vh; display:flex; flex-direction:column;
-      justify-content:center; align-items:center; text-align:center; padding-top:80px;
-    }
-    .hero-badge {
-      display:inline-block; background:rgba(167,139,250,0.1); border:1px solid var(--border);
-      color:var(--accent); font-size:0.8rem; padding:6px 18px; border-radius:99px;
-      margin-bottom:24px; letter-spacing:0.1em;
-    }
+    .divider { height:1px; background:linear-gradient(90deg,var(--accent),transparent); margin-bottom:24px; }
+    #home { min-height:100vh; display:flex; flex-direction:column; justify-content:center; align-items:center; text-align:center; padding-top:80px; }
+    .hero-badge { display:inline-block; background:rgba(167,139,250,0.1); border:1px solid var(--border); color:var(--accent); font-size:0.8rem; padding:6px 18px; border-radius:99px; margin-bottom:24px; letter-spacing:0.1em; }
     .hero-title { font-family:'Noto Serif KR',serif; font-size:clamp(2.5rem,6vw,4.5rem); font-weight:700; line-height:1.2; margin-bottom:16px; }
     .hero-title .galaxy { color:var(--accent); }
     .hero-desc { color:var(--muted); font-size:1.1rem; max-width:500px; line-height:1.7; margin-bottom:40px; }
     .hero-buttons { display:flex; gap:16px; flex-wrap:wrap; justify-content:center; }
-
     .btn { padding:12px 28px; border-radius:8px; font-size:0.95rem; cursor:pointer; border:none; font-family:inherit; transition:all 0.2s; }
     .btn-primary { background:var(--accent); color:#0d0520; font-weight:600; }
     .btn-primary:hover { box-shadow:var(--glow); transform:translateY(-2px); }
@@ -101,42 +106,30 @@
     .btn-outline:hover { background:rgba(167,139,250,0.1); }
     .btn-danger { background:rgba(239,68,68,0.12); color:#f87171; border:1px solid rgba(239,68,68,0.25); font-size:0.8rem; padding:6px 12px; }
     .btn-danger:hover { background:rgba(239,68,68,0.22); }
-
     .tab-bar { display:flex; gap:4px; background:var(--surface); border-radius:12px; padding:4px; margin-bottom:40px; width:fit-content; }
     .tab-btn { padding:10px 24px; border-radius:8px; border:none; background:transparent; color:var(--muted); font-family:inherit; font-size:0.95rem; cursor:pointer; transition:all 0.2s; }
     .tab-btn.active { background:var(--accent); color:#0d0520; font-weight:600; }
     .tab-panel { display:none; } .tab-panel.active { display:block; }
-
-    /* 임원 카드 */
     .officer-grid { display:grid; grid-template-columns:repeat(auto-fill,minmax(300px,1fr)); gap:20px; }
-    .officer-card {
-      background:var(--surface); border:1px solid var(--border); border-radius:16px;
-      padding:24px 28px; display:flex; flex-direction:row; align-items:center; gap:20px;
-      transition:transform 0.2s, box-shadow 0.2s;
-    }
+    .officer-card { background:var(--surface); border:1px solid var(--border); border-radius:16px; padding:24px 28px; display:flex; flex-direction:row; align-items:center; gap:20px; transition:transform 0.2s, box-shadow 0.2s; }
     .officer-card:hover { transform:translateY(-4px); box-shadow:var(--glow); }
     .officer-avatar { width:72px; height:72px; border-radius:50%; background:linear-gradient(135deg,var(--accent),var(--accent2)); flex-shrink:0; display:flex; align-items:center; justify-content:center; font-size:1.8rem; }
     .officer-info { display:flex; flex-direction:column; text-align:left; }
     .officer-role { font-size:0.75rem; color:var(--accent); letter-spacing:0.08em; margin-bottom:4px; }
     .officer-name { font-size:1.1rem; font-weight:600; margin-bottom:6px; }
     .officer-desc { font-size:0.83rem; color:var(--muted); line-height:1.6; }
-
-    /* 공약 카드 */
     .promise-list { display:flex; flex-direction:column; gap:20px; }
     .promise-card { background:var(--surface); border:1px solid var(--border); border-radius:16px; padding:28px 32px; display:flex; gap:20px; align-items:flex-start; transition:transform 0.2s; }
     .promise-card:hover { transform:translateX(4px); }
     .promise-icon { font-size:2.2rem; flex-shrink:0; line-height:1; margin-top:2px; }
     .promise-title { font-size:1.05rem; font-weight:600; margin-bottom:8px; }
     .promise-body { font-size:0.9rem; color:var(--muted); line-height:1.7; }
-
-    /* 게시판 */
     .admin-login-box { background:var(--surface); border:1px solid var(--border); border-radius:16px; padding:32px; max-width:420px; margin-bottom:40px; }
     .admin-login-box h3 { margin-bottom:16px; font-size:1rem; }
     .form-row { display:flex; gap:12px; margin-bottom:12px; }
     .form-input { flex:1; background:var(--bg); border:1px solid var(--border); border-radius:8px; padding:10px 14px; color:var(--text); font-family:inherit; font-size:0.9rem; outline:none; }
     .form-input:focus { border-color:var(--accent); }
     textarea.form-input { resize:vertical; min-height:100px; }
-
     .post-list { display:flex; flex-direction:column; gap:16px; }
     .post-card { background:var(--surface); border:1px solid var(--border); border-radius:12px; padding:24px 28px; transition:all 0.2s; }
     .post-card:hover { border-color:var(--accent); }
@@ -149,8 +142,6 @@
     .post-detail-body { background:var(--bg); border-radius:8px; padding:20px; font-size:0.92rem; line-height:1.8; color:var(--text); }
     .post-image { max-width:100%; border-radius:8px; margin-top:12px; display:block; }
     .post-link { display:inline-block; margin-top:10px; color:var(--accent2); font-size:0.88rem; word-break:break-all; }
-
-    /* 투표 */
     .poll-card { background:var(--surface); border:1px solid var(--border); border-radius:16px; padding:28px 32px; margin-bottom:20px; }
     .poll-question { font-size:1.05rem; font-weight:600; margin-bottom:16px; }
     .poll-options { display:flex; flex-direction:column; gap:10px; }
@@ -162,13 +153,10 @@
     .poll-label { position:relative; z-index:1; }
     .poll-count { font-size:0.8rem; color:var(--muted); min-width:50px; }
     .poll-meta { font-size:0.78rem; color:var(--muted); margin-top:12px; }
-
-    /* 건의함 */
     .suggest-form { background:var(--surface); border:1px solid var(--border); border-radius:16px; padding:32px; max-width:600px; margin-bottom:48px; }
     .suggest-form h3 { margin-bottom:20px; font-size:1rem; }
     .suggest-list { display:flex; flex-direction:column; gap:20px; }
     .suggest-card { background:var(--surface); border:1px solid var(--border); border-radius:12px; padding:24px; }
-    .suggest-header { display:flex; justify-content:space-between; align-items:flex-start; }
     .suggest-q { font-size:0.95rem; margin-bottom:6px; }
     .suggest-status { display:inline-block; font-size:0.75rem; padding:3px 10px; border-radius:99px; margin-bottom:12px; }
     .status-answered { background:rgba(52,211,153,0.15); color:#34d399; }
@@ -176,48 +164,29 @@
     .suggest-answer strong { color:var(--accent); display:block; margin-bottom:4px; font-size:0.8rem; }
     .suggest-image { max-width:100%; border-radius:8px; margin-top:10px; display:block; }
     .suggest-link { display:inline-block; margin-top:8px; color:var(--accent2); font-size:0.88rem; word-break:break-all; }
-
-    .admin-panel { display:none; background:var(--surface2); border:1px solid var(--accent); border-radius:12px; padding:24px; margin-top:16px; margin-bottom:32px; }
+    .admin-panel { display:none; background:var(--surface2); border:1px solid var(--accent); border-radius:12px; padding:24px; margin-top:16px; margin-bottom:32px; overflow:hidden; }
     .admin-panel.open { display:block; }
     .admin-suggest-item { background:var(--bg); border-radius:8px; padding:16px; margin-bottom:16px; }
     .admin-suggest-item p { font-size:0.9rem; margin-bottom:10px; }
-
-    /* 맨 위로 버튼 */
-    #backToTop {
-      position:fixed; bottom:32px; left:32px; z-index:200;
-      width:52px; height:52px; border-radius:50%;
-      background:var(--accent); color:#0d0520; border:none;
-      font-size:1.3rem; cursor:pointer; box-shadow:var(--glow);
-      display:flex; align-items:center; justify-content:center;
-      transition:all 0.3s; opacity:0; pointer-events:none;
-    }
+    #backToTop { position:fixed; bottom:32px; left:32px; z-index:200; width:52px; height:52px; border-radius:50%; background:var(--accent); color:#0d0520; border:none; font-size:1.3rem; cursor:pointer; box-shadow:var(--glow); display:flex; align-items:center; justify-content:center; transition:all 0.3s; opacity:0; pointer-events:none; }
     #backToTop.show { opacity:1; pointer-events:auto; }
     #backToTop:hover { transform:translateY(-3px); box-shadow:0 0 30px rgba(167,139,250,0.5); }
-
     footer { position:relative; z-index:1; text-align:center; padding:40px; border-top:1px solid var(--border); color:var(--muted); font-size:0.85rem; }
-
     #toast { position:fixed; bottom:32px; right:32px; background:var(--accent); color:#0d0520; font-weight:600; padding:12px 24px; border-radius:8px; font-size:0.9rem; z-index:999; opacity:0; transform:translateY(10px); transition:all 0.3s; pointer-events:none; }
     #toast.show { opacity:1; transform:translateY(0); }
-
     .fade-in { opacity:0; transform:translateY(20px); transition:opacity 0.6s, transform 0.6s; }
     .fade-in.visible { opacity:1; transform:translateY(0); }
-
     .file-label { display:inline-flex; align-items:center; gap:6px; background:var(--surface2); border:1px dashed var(--border); border-radius:8px; padding:8px 16px; color:var(--muted); font-size:0.85rem; cursor:pointer; transition:all 0.2s; }
     .file-label:hover { border-color:var(--accent); color:var(--accent); }
     input[type="file"] { display:none; }
-    .preview-img { max-width:200px; border-radius:8px; margin-top:8px; display:none; }
   </style>
 </head>
 <body>
 
 <canvas id="stars-canvas"></canvas>
-
-<!--  맨 위로 버튼 -->
 <button id="backToTop" onclick="window.scrollTo({top:0,behavior:'smooth'})" title="처음으로 ↑">🔝</button>
 
-<!-- 네비게이션 -->
 <nav>
-  <!--메뉴바-->
   <div class="nav-logo">✦ 은하<span>학생회</span> ✦</div>
   <ul class="nav-links">
     <li><a href="#intro">학생회 소개</a></li>
@@ -226,12 +195,10 @@
   </ul>
 </nav>
 
-<!-- 히어로 -->
 <section id="home">
   <div class="hero-badge">2026년도 성심여자고등학교</div>
   <h1 class="hero-title">은하<br><span class="galaxy">학생회</span></h1>
   <p class="hero-desc">학생 여러분과 함께 성장하는 은하학생회가 되겠습니다.</p>
-  <!-- 버튼 3개 -->
   <div class="hero-buttons">
     <button class="btn btn-primary" onclick="scrollToSection('intro')">학생회 소개 보기</button>
     <button class="btn btn-primary" onclick="scrollToSection('board')">게시판</button>
@@ -239,10 +206,9 @@
   </div>
 </section>
 
-<!-- 학생회 소개 -->
 <section id="intro" class="fade-in">
   <p class="section-title">학생회 소개</p>
-  <p class="section-sub">은하학생회 의미,임원 소개,공약 소개</p>
+  <p class="section-sub">은하학생회 의미, 임원 소개, 공약 소개</p>
   <div class="divider"></div>
   <div class="tab-bar">
     <button class="tab-btn active" onclick="switchTab('meaning')">✨ 은하학생회 의미</button>
@@ -250,84 +216,115 @@
     <button class="tab-btn" onclick="switchTab('promises')">📋 공약 소개</button>
   </div>
 
-  <!-- 은하학생회 의미 탭 -->
   <div id="tab-meaning" class="tab-panel active">
     <p style="font-size:1rem; line-height:2; color:var(--muted);">
-      은하학생회는 학생 한 명 한 명이 모두 별이라는 생각에서 출발했습니다. <br>은하는 별들에게 빛날 자리를 제공해주는 존재이며 빛나는 별들의 모임입니다.<br>저희는 학교를 모든 별, 즉 학생들이 자신의 빛을 발할 수 있는 공간인 은하처럼 만들고자 합니다. <br>학생회로서 학생들에게 더 즐겁고 편리한 학교 생활을 만들어주고 나아가 학생들이 학교를 더 좋아하도록 만드는 것이 은하학생회의 목표입니다.
+      은하학생회는 학생 한 명 한 명이 모두 별이라는 생각에서 출발했습니다. <br>은하는 별들에게 빛날 자리를 제공해주는 존재이며 빛나는 별들의 모임입니다.<br>저희는 학교를 모든 별, 즉 학생들이 자신의 빛을 발할 수 있는 공간인 은하처럼 만들고자 합니다. <br>학생회로서 학생들에게 더 즐겁고 편리한 학교 생활을 만들어주고 나아가 학생들이 학교를 더 좋아하도록 만드는 것이 은하학생회의 목표입니다.
     </p>
   </div>
 
-  <!-- 임원 소개 탭 -->
   <div id="tab-officers" class="tab-panel">
+    <div style="display:flex; flex-direction:column; gap:32px;"> 
+        <div>
+      <p style="font-size:0.8rem; color:var(--accent); letter-spacing:0.1em; margin-bottom:12px;">★ 회장단</p>
       <div class="officer-grid">
-      <div class="officer-card">
-        <div class="officer-avatar">🌟</div>
-        <div class="officer-info">
-          <p class="officer-role">학생회장</p>
-          <p class="officer-name">강가림</p>
-          <p class="officer-desc">학교 생활이 힘들 때도 즐거울 때도 항상 여러분 곁에 있는 <br>학생회장이 되겠습니다.</p>
+        <div class="officer-card">
+          <div class="officer-avatar">🌟</div>
+          <div class="officer-info">
+            <p class="officer-role">학생회장</p>
+            <p class="officer-name">강가림</p>
+            <p class="officer-desc">학교 생활이 힘들 때도 즐거울 때도 항상 여러분 곁에 있는 학생회장이 되겠습니다.</p>
+          </div>
         </div>
-      </div>
-      <div class="officer-card">
-        <div class="officer-avatar">⭐</div>
-        <div class="officer-info">
-          <p class="officer-role">학생부회장</p>
-          <p class="officer-name">송다인</p>
-          <p class="officer-desc">한마디</p>
-        </div>
-      </div>
-      <div class="officer-card">
-        <div class="officer-avatar">✨</div>
-        <div class="officer-info">
-          <p class="officer-role">기획부 부장</p>
-          <p class="officer-name">신다형</p>
-          <p class="officer-desc">한마디</p>
-        </div>
-      </div>
-      <div class="officer-card">
-        <div class="officer-avatar">💫</div>
-        <div class="officer-info">
-          <p class="officer-role">기획부 부원</p>
-          <p class="officer-name">권재은</p>
-          <p class="officer-desc">한마디</p>
-        </div>
-      </div>
-      <div class="officer-card">
-        <div class="officer-avatar">✨</div>
-        <div class="officer-info">
-          <p class="officer-role">홍보자료부 부장</p>
-          <p class="officer-name">최아리</p>
-          <p class="officer-desc">한마디</p>
-        </div>
-      </div>
-      <div class="officer-card">
-        <div class="officer-avatar">✨</div>
-        <div class="officer-info">
-          <p class="officer-role">문화생활부 부장</p>
-          <p class="officer-name">노현서</p>
-          <p class="officer-desc">여러분이 재밌고 편안한 학교 생활을 할 수 있도록 열심히 노력하겠습니다!</p>
-        </div>
-      </div>
-      <div class="officer-card">
-        <div class="officer-avatar">💫</div>
-        <div class="officer-info">
-          <p class="officer-role">문화생활부 부원</p>
-          <p class="officer-name">한규원</p>
-          <p class="officer-desc">은하학생회의 귀염을 담당하고 있습니다.</p>
-        </div>
-      </div>
-      <div class="officer-card">
-        <div class="officer-avatar">✨</div>
-        <div class="officer-info">
-          <p class="officer-role">복지부 부장</p>
-          <p class="officer-name">황신아</p>
-          <p class="officer-desc">학생들과 소통하는 학생회 임원이 되겠습니다!</p>
+        <div class="officer-card">
+          <div class="officer-avatar">⭐</div>
+          <div class="officer-info">
+            <p class="officer-role">학생부회장</p>
+            <p class="officer-name">송다인</p>
+            <p class="officer-desc">여러분의 가능성이 빛날 수 있도록, 작은 별도 놓치지 않는 전교부회장이 되겠습니다.</p>
+          </div>
         </div>
       </div>
     </div>
+
+    <!-- 기획부 -->
+    <div>
+      <p style="font-size:0.8rem; color:var(--accent); letter-spacing:0.1em; margin-bottom:12px;">✦ 기획부</p>
+      <div class="officer-grid">
+        <div class="officer-card">
+          <div class="officer-avatar">✨</div>
+          <div class="officer-info">
+            <p class="officer-role">기획부 부장</p>
+            <p class="officer-name">신다형</p>
+            <p class="officer-desc">행동으로 실천하는 학생회 임원이 되겠습니다.</p>
+          </div>
+        </div>
+        <div class="officer-card">
+          <div class="officer-avatar">💫</div>
+          <div class="officer-info">
+            <p class="officer-role">기획부 부원</p>
+            <p class="officer-name">권재은</p>
+            <p class="officer-desc">한마디</p>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- 홍보자료부 -->
+    <div>
+      <p style="font-size:0.8rem; color:var(--accent); letter-spacing:0.1em; margin-bottom:12px;">✦ 홍보자료부</p>
+      <div class="officer-grid">
+        <div class="officer-card">
+          <div class="officer-avatar">✨</div>
+          <div class="officer-info">
+            <p class="officer-role">홍보자료부 부장</p>
+            <p class="officer-name">최아리</p>
+            <p class="officer-desc">한마디</p>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- 문화생활부 -->
+    <div>
+      <p style="font-size:0.8rem; color:var(--accent); letter-spacing:0.1em; margin-bottom:12px;">✦ 문화생활부</p>
+      <div class="officer-grid">
+        <div class="officer-card">
+          <div class="officer-avatar">✨</div>
+          <div class="officer-info">
+            <p class="officer-role">문화생활부 부장</p>
+            <p class="officer-name">노현서</p>
+            <p class="officer-desc">여러분이 재밌고 편안한 학교 생활을 할 수 있도록 열심히 노력하겠습니다!</p>
+          </div>
+        </div>
+        <div class="officer-card">
+          <div class="officer-avatar">💫</div>
+          <div class="officer-info">
+            <p class="officer-role">문화생활부 부원</p>
+            <p class="officer-name">한규원</p>
+            <p class="officer-desc">학생들에게 항상 친절하고 도움이 되는 사람이 되겠습니다.</p>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- 복지부 -->
+    <div>
+      <p style="font-size:0.8rem; color:var(--accent); letter-spacing:0.1em; margin-bottom:12px;">✦ 복지부</p>
+      <div class="officer-grid">
+        <div class="officer-card">
+          <div class="officer-avatar">✨</div>
+          <div class="officer-info">
+            <p class="officer-role">복지부 부장</p>
+            <p class="officer-name">황신아</p>
+            <p class="officer-desc">학생들과 소통하는 학생회 임원이 되겠습니다!</p>
+          </div>
+        </div>
+      </div>
+    </div>
+
+  </div>
   </div>
 
-  <!-- 공약 소개 -->
   <div id="tab-promises" class="tab-panel">
     <div class="promise-list">
       <div class="promise-card">
@@ -341,7 +338,7 @@
         <div class="promise-icon">🌐</div>
         <div>
           <p class="promise-title">학생회 웹 운영</p>
-          <p class="promise-body">학생들이 학생회 관련 정보에 쉽게 접근할 수 있게 하여 효율적인 학생 복지를 실현하고자 하는 공약<br>학생회 홈페이지: 학생회 활동 내역, 공지사항 등을 웹상에서 쉽게 접근할 수 있게 함은 물론 건의사항을 온라인상에서 편하게 제시할 수 있도록 만들기 위한 공간인 학생회 홈페이지 개설<br>우산 대여 온라인 시스템: 우산 대여 및 반납 과정을 간편하고 효율적으로 관리하기 위한 우산 대여 온라인 시스템 도입</p>
+          <p class="promise-body">학생들이 학생회 관련 정보에 쉽게 접근할 수 있게 하여 효율적인 학생 복지를 실현하고자 하는 공약<br>학생회 홈페이지: 학생회 활동 내역, 공지사항 등을 웹상에서 쉽게 접근할 수 있게 함은 물론 건의사항을 온라인상에서 편하게 제시할 수 있도록 만들기 위한 공간인 학생회 홈페이지 개설</p>
         </div>
       </div>
       <div class="promise-card">
@@ -372,37 +369,35 @@
 <!-- 게시판 -->
 <section id="board" class="fade-in">
   <p class="section-title">학생회 게시판</p>
-  <p class="section-sub">학생회 활동 내역과 공지사항을 확인하세요.</p>
+  <p class="section-sub">은하학생회 활동 내역과 공지사항,최근 소식을 확인하세요.</p>
   <div class="divider"></div>
 
-  <div class="admin-login-box" id="loginBox">
-    <h3>🔐 관리자 글쓰기</h3>
+  <div class="admin-login-box" id="loginBox" style="display:none;">
+    <h3>🔐 관리자 로그인</h3>
     <div class="form-row" style="align-items:center;">
       <input class="form-input" type="password" id="boardPw" placeholder="관리자 비밀번호" style="min-width:0;" />
       <button class="btn btn-primary" onclick="loginBoard()" style="white-space:nowrap;flex-shrink:0;">확인</button>
     </div>
   </div>
 
-  <!-- 글쓰기 폼 -->
   <div id="writeForm" style="display:none; margin-bottom:40px;">
     <div class="admin-login-box" style="max-width:100%;">
       <h3>✍️ 새 글 작성</h3>
       <input class="form-input" id="postTitle" placeholder="제목" style="width:100%; margin-bottom:12px;" />
       <textarea class="form-input" id="postBody" placeholder="내용을 입력해주세요" style="width:100%; margin-bottom:12px;"></textarea>
-      <input class="form-input" id="postLink" placeholder="🔗 링크 " style="width:100%; margin-bottom:12px;" />
+      <input class="form-input" id="postLink" placeholder="🔗 링크" style="width:100%; margin-bottom:12px;" />
       <div style="margin-bottom:12px;">
-        <label class="file-label" for="postImage">📷 사진 첨부</label>
-        <input type="file" id="postImage" accept="image/*" onchange="previewImage('postImage','postImagePreview')" />
-        <img id="postImagePreview" class="preview-img" />
+        <label class="file-label" for="postImage">📷 사진 첨부 (여러 장 가능)</label>
+        <input type="file" id="postImage" accept="image/*" multiple onchange="previewImage('postImage','postImagePreview')" />
+        <div id="postImagePreview"></div>
       </div>
-      <div style="margin-top:4px; display:flex; gap:10px;">
+      <div style="display:flex; gap:10px;">
         <button class="btn btn-primary" onclick="submitPost()">등록하기</button>
         <button class="btn btn-outline" onclick="logoutBoard()">로그아웃</button>
       </div>
     </div>
   </div>
 
-  <!-- 여론 투표 -->
   <div style="margin-bottom:48px;">
     <h3 style="font-size:1rem; margin-bottom:20px; color:var(--muted);">📊 여론 투표</h3>
     <div id="pollWriteForm" style="display:none; margin-bottom:24px;">
@@ -431,20 +426,19 @@
   <p class="section-sub">학교생활에 대한 건의사항을 자유롭게 남겨주세요. 관리자가 검토 후 답변드립니다.</p>
   <div class="divider"></div>
 
-  <!-- 건의함 -->
   <div class="suggest-form">
     <h3>건의하기</h3>
     <textarea class="form-input" id="suggestText" placeholder="건의 내용을 자유롭게 작성해주세요." style="width:100%; margin-bottom:12px;"></textarea>
     <input class="form-input" id="suggestLink" placeholder="🔗 링크" style="width:100%; margin-bottom:12px;" />
     <div style="margin-bottom:16px;">
-      <label class="file-label" for="suggestImage">📷 사진 첨부</label>
-      <input type="file" id="suggestImage" accept="image/*" onchange="previewImage('suggestImage','suggestImagePreview')" />
-      <img id="suggestImagePreview" class="preview-img" />
+      <label class="file-label" for="suggestImage">📷 사진 첨부 (여러 장 가능)</label>
+      <input type="file" id="suggestImage" accept="image/*" multiple onchange="previewImage('suggestImage','suggestImagePreview')" />
+      <div id="suggestImagePreview"></div>
     </div>
     <button class="btn btn-primary" onclick="submitSuggest()">건의 제출하기</button>
   </div>
 
-  <div style="margin-bottom:24px;">
+  <div id="suggestLoginArea" style="margin-bottom:24px; display:none;">
     <div style="display:flex; gap:10px; align-items:center;">
       <input class="form-input" type="password" id="suggestPw" placeholder="관리자 비밀번호" style="max-width:220px;" />
       <button class="btn btn-outline" onclick="loginSuggest()">관리자 보기</button>
@@ -463,13 +457,22 @@
   </div>
 </section>
 
-<!-- 푸터 -->
 <footer>
   <p style="color:var(--accent); font-family:'Noto Serif KR',serif; margin-bottom:8px;">✦ 은하학생회 ✦</p>
-  <p>문의 인스타: @galaxysc.26</p>
+  <p>문의 <br> 메일 scgalaxy.26@gmail.com <br> 인스타 @galaxysc.26</p>
 </footer>
 
 <div id="toast"></div>
+<div id="adminPopup" style="display:none; position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.7); z-index:999; align-items:center; justify-content:center;">
+  <div style="background:#0d1630; border:1px solid rgba(167,139,250,0.4); border-radius:16px; padding:32px; width:320px;">
+    <h3 style="margin-bottom:16px; color:#a78bfa;">🔐 관리자 로그인</h3>
+    <input class="form-input" type="password" id="adminPwInput" placeholder="비밀번호" style="width:100%; margin-bottom:12px;" />
+    <div style="display:flex; gap:10px;">
+      <button class="btn btn-primary" onclick="adminLogin()">확인</button>
+      <button class="btn btn-outline" onclick="closeAdminPopup()">취소</button>
+    </div>
+  </div>
+</div>
 
 <script>
   const ADMIN_PASSWORD = "0414";
@@ -498,7 +501,6 @@
   resizeCanvas(); initStars(); drawStars();
   window.addEventListener('resize', () => { resizeCanvas(); initStars(); });
 
-  // 맨 위로 버튼
   const backBtn = document.getElementById('backToTop');
   window.addEventListener('scroll', () => { backBtn.classList.toggle('show', window.scrollY > 300); });
 
@@ -530,24 +532,50 @@
 
   // 이미지 미리보기
   function previewImage(inputId, previewId) {
-    const file = document.getElementById(inputId).files[0];
+    const files = document.getElementById(inputId).files;
     const preview = document.getElementById(previewId);
-    if (!file) { preview.style.display='none'; return; }
-    const reader = new FileReader();
-    reader.onload = e => { preview.src = e.target.result; preview.style.display = 'block'; };
-    reader.readAsDataURL(file);
-  }
-  function readImageAsBase64(inputId) {
-    return new Promise(resolve => {
-      const file = document.getElementById(inputId).files[0];
-      if (!file) { resolve(''); return; }
+    preview.innerHTML = '';
+    if (!files || files.length === 0) return;
+    Array.from(files).forEach(file => {
       const reader = new FileReader();
-      reader.onload = e => resolve(e.target.result);
+      reader.onload = e => {
+        const img = document.createElement('img');
+        img.src = e.target.result;
+        img.style.cssText = 'max-width:200px;border-radius:8px;margin:4px;display:inline-block;';
+        preview.appendChild(img);
+      };
       reader.readAsDataURL(file);
     });
   }
 
-  // 초기 상태
+  // ★ 이미지를 객체로 저장 (Firebase는 배열을 제대로 저장 못함 → 객체로 우회)
+  function readImagesAsObject(inputId) {
+    return new Promise(resolve => {
+      const files = document.getElementById(inputId).files;
+      if (!files || files.length === 0) { resolve(null); return; }
+      const result = {};
+      let done = 0;
+      Array.from(files).forEach((file, i) => {
+        const reader = new FileReader();
+        reader.onload = e => {
+          result['img' + i] = e.target.result;
+          done++;
+          if (done === files.length) resolve(result);
+        };
+        reader.readAsDataURL(file);
+      });
+    });
+  }
+
+  // 이미지 렌더링 헬퍼
+  function renderImages(image, className) {
+    if (!image) return '';
+    const srcs = (typeof image === 'object' && !Array.isArray(image))
+      ? Object.values(image)
+      : (Array.isArray(image) ? image : [image]);
+    return srcs.filter(Boolean).map(src => `<img src="${src}" class="${className}" />`).join('');
+  }
+
   window._postsData = {}; window._suggestsData = {}; window._pollsData = {};
   let boardLoggedIn = false;
   let suggestLoggedIn = false;
@@ -572,12 +600,13 @@
     document.getElementById('boardPw').value = '';
     renderPosts();
   }
+
   async function submitPost() {
     const title = document.getElementById('postTitle').value.trim();
     const body = document.getElementById('postBody').value.trim();
     const link = document.getElementById('postLink').value.trim();
     if (!title || !body) { showToast('제목과 내용을 모두 입력해주세요.'); return; }
-    const image = await readImageAsBase64('postImage');
+    const image = await readImagesAsObject('postImage');
     const now = new Date();
     window._push(window._postsRef, {
       title, body, link, image,
@@ -587,14 +616,16 @@
     document.getElementById('postBody').value = '';
     document.getElementById('postLink').value = '';
     document.getElementById('postImage').value = '';
-    document.getElementById('postImagePreview').style.display = 'none';
+    document.getElementById('postImagePreview').innerHTML = '';
     showToast('게시글이 등록되었습니다!');
   }
+
   function deletePost(key) {
     if (!confirm('정말 삭제할까요?')) return;
     window._remove(window._ref(window._db, 'posts/'+key));
     showToast('삭제되었습니다.');
   }
+
   window.renderPosts = function() {
     const data = window._postsData || {};
     const entries = Object.entries(data).reverse();
@@ -615,14 +646,46 @@
         <div class="post-detail" id="pd-${i}">
           <div class="post-detail-body">
             ${p.body.replace(/\n/g,'<br>')}
-            ${p.image ? `<img src="${p.image}" class="post-image" />` : ''}
+            ${renderImages(p.image, 'post-image')}
             ${p.link ? `<a href="${p.link}" target="_blank" class="post-link">🔗 ${p.link}</a>` : ''}
+          </div>
+          <div style="margin-top:12px;display:flex;gap:10px;align-items:center;">
+            <button onclick="likePost('${key}')" style="background:none;border:none;color:var(--accent);cursor:pointer;font-size:0.9rem;">
+              ♥ <span id="like-${key}">${p.likes||0}</span>
+            </button>
+          </div>
+          <div style="margin-top:12px;">
+            <input class="form-input" id="reply-${key}" placeholder="댓글을 입력하세요" style="width:100%;margin-bottom:8px;" />
+            <button class="btn btn-outline" onclick="submitReply('${key}')" style="font-size:0.8rem;padding:6px 14px;">댓글 등록</button>
+            <div id="replies-${key}" style="margin-top:10px;display:flex;flex-direction:column;gap:8px;">
+              ${p.replies ? Object.values(p.replies).map(r => `
+                <div style="background:var(--bg);border-radius:8px;padding:10px 14px;font-size:0.85rem;">
+                  <span style="color:var(--muted);font-size:0.75rem;">${r.date}</span>
+                  <p style="margin-top:4px;">${r.text}</p>
+                </div>
+              `).join('') : ''}
+            </div>
           </div>
         </div>
       </div>
     `).join('');
   };
+
   function togglePost(id) { document.getElementById(id).classList.toggle('open'); }
+
+  function likePost(key) {
+    const post = (window._postsData||{})[key];
+    if (!post) return;
+    window._update(window._ref(window._db,'posts/'+key), { likes: (post.likes||0)+1 });
+  }
+
+  function submitReply(key) {
+    const text = document.getElementById('reply-'+key).value.trim();
+    if (!text) { showToast('댓글을 입력해주세요.'); return; }
+    window._push(window._ref(window._db,'posts/'+key+'/replies'), { text, date: new Date().toLocaleDateString('ko-KR') });
+    document.getElementById('reply-'+key).value = '';
+    showToast('댓글이 등록되었습니다.');
+  }
 
   // ── 투표 ──
   function submitPoll() {
@@ -681,7 +744,7 @@
             </div>`;
           }).join('')}
         </div>
-        <p class="poll-meta">${poll.date} · 총 ${total}표 ${hasVoted?'· 투표 완료 ':'· 클릭해서 투표하기'}</p>
+        <p class="poll-meta">${poll.date} · 총 ${total}표 ${hasVoted?'· 투표 완료':'· 클릭해서 투표하기'}</p>
       </div>`;
     }).join('');
   };
@@ -691,13 +754,13 @@
     const text = document.getElementById('suggestText').value.trim();
     if (!text) { showToast('건의 내용을 입력해주세요.'); return; }
     const link = document.getElementById('suggestLink').value.trim();
-    const image = await readImageAsBase64('suggestImage');
+    const image = await readImagesAsObject('suggestImage');
     const now = new Date();
     window._push(window._suggestsRef, { text, link, image, answer:'', date:now.toLocaleDateString('ko-KR') });
     document.getElementById('suggestText').value='';
     document.getElementById('suggestLink').value='';
     document.getElementById('suggestImage').value='';
-    document.getElementById('suggestImagePreview').style.display='none';
+    document.getElementById('suggestImagePreview').innerHTML='';
     showToast('건의가 제출되었습니다. 관리자 확인 후 답변할 예정입니다.');
   }
   function loginSuggest() {
@@ -735,12 +798,12 @@
               <p><strong>[${s.date}]</strong> ${s.text}</p>
               <button class="btn btn-danger" onclick="deleteSuggest('${key}')">🗑 삭제</button>
             </div>
-            ${s.image?`<img src="${s.image}" style="max-width:200px;border-radius:8px;margin:6px 0;"/>`:''}
+            ${renderImages(s.image, 'suggest-image')}
             ${s.link?`<p><a href="${s.link}" target="_blank" style="color:var(--accent2);font-size:0.85rem;">🔗 ${s.link}</a></p>`:''}
             ${s.answer
               ?`<p style="color:var(--accent);font-size:0.85rem;">✔ 답변 완료: ${s.answer}</p>`
-              :`<div style="display:flex;gap:8px;margin-top:8px;">
-                  <input class="form-input" id="answer-${key}" placeholder="답변 내용 입력" style="flex:1;" />
+              :`<div style="display:flex;gap:8px;margin-top:8px;flex-wrap:wrap;">
+                  <input class="form-input" id="answer-${key}" placeholder="답변 내용 입력" style="flex:1;min-width:0;" />
                   <button class="btn btn-primary" onclick="answerSuggest('${key}')">답변</button>
                 </div>`
             }
@@ -756,7 +819,8 @@
     pubList.innerHTML = answered.map(([key,s])=>`
       <div class="suggest-card">
         <p class="suggest-q">💬 ${s.text}</p>
-        ${s.image?`<img src="${s.image}" class="suggest-image" />`:''}
+        <p style="font-size:0.75rem; color:var(--muted);margin-top:4px;">${s.date}</p>
+        ${renderImages(s.image, 'suggest-image')}
         ${s.link?`<a href="${s.link}" target="_blank" class="suggest-link">🔗 ${s.link}</a>`:''}
         <br><span class="suggest-status status-answered">답변 완료</span>
         <div class="suggest-answer">
@@ -767,6 +831,38 @@
   };
 
   renderPosts(); renderSuggests(); renderPolls();
+
+// 팝업 관리자 로그인
+function closeAdminPopup() {
+  document.getElementById('adminPopup').style.display = 'none';
+  document.getElementById('adminPwInput').value = '';
+}
+function adminLogin() {
+  const pw = document.getElementById('adminPwInput').value;
+  if (pw === ADMIN_PASSWORD) {
+    boardLoggedIn = true;
+    suggestLoggedIn = true;
+    closeAdminPopup();
+    document.getElementById('writeForm').style.display = 'block';
+    document.getElementById('pollWriteForm').style.display = 'block';
+    document.getElementById('suggestAdmin').classList.add('open');
+    renderPosts(); renderSuggests();
+    showToast('관리자 로그인 되었습니다!');
+  } else {
+    showToast('비밀번호가 틀렸습니다.');
+  }
+}
+let tapCount = 0;
+let tapTimer = null;
+document.querySelector('.nav-logo').addEventListener('click', () => {
+  tapCount++;
+  clearTimeout(tapTimer);
+  tapTimer = setTimeout(() => { tapCount = 0; }, 1500);
+  if (tapCount >= 3) {
+    tapCount = 0;
+    document.getElementById('adminPopup').style.display = 'flex';
+  }
+});
 </script>
 </body>
 </html>
