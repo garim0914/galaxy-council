@@ -407,29 +407,37 @@
       <div class="admin-login-box" style="max-width:100%;">
         <h3>📊 새 투표 만들기</h3>
         <input class="form-input" id="pollQuestion" placeholder="투표 질문을 입력하세요" style="width:100%; margin-bottom:10px;" />
-        <div style="display:flex;gap:8px;align-items:center;margin-bottom:8px;">
-          <input class="form-input" id="pollOpt1" placeholder="선택지 1" style="flex:1;" />
-          <label class="file-label" for="pollOptImg1" style="padding:8px 12px;white-space:nowrap;">📷</label>
-          <input type="file" id="pollOptImg1" accept="image/*" onchange="previewPollOptImg(1)" />
-          <img id="pollOptImgPreview1" style="width:40px;height:40px;object-fit:cover;border-radius:6px;display:none;" />
+        <div style="margin-bottom:8px;">
+          <input class="form-input" id="pollOpt1" placeholder="선택지 1" style="width:100%;margin-bottom:6px;" />
+          <div style="display:flex;gap:8px;align-items:center;">
+            <label class="file-label" for="pollOptImg1" style="padding:8px 12px;white-space:nowrap;">📷 사진 첨부</label>
+            <input type="file" id="pollOptImg1" accept="image/*" onchange="previewPollOptImg(1)" />
+            <img id="pollOptImgPreview1" style="width:40px;height:40px;object-fit:cover;border-radius:6px;display:none;" />
+          </div>
         </div>
-        <div style="display:flex;gap:8px;align-items:center;margin-bottom:8px;">
-          <input class="form-input" id="pollOpt2" placeholder="선택지 2" style="flex:1;" />
-          <label class="file-label" for="pollOptImg2" style="padding:8px 12px;white-space:nowrap;">📷</label>
-          <input type="file" id="pollOptImg2" accept="image/*" onchange="previewPollOptImg(2)" />
-          <img id="pollOptImgPreview2" style="width:40px;height:40px;object-fit:cover;border-radius:6px;display:none;" />
+        <div style="margin-bottom:8px;">
+          <input class="form-input" id="pollOpt2" placeholder="선택지 2" style="width:100%;margin-bottom:6px;" />
+          <div style="display:flex;gap:8px;align-items:center;">
+            <label class="file-label" for="pollOptImg2" style="padding:8px 12px;white-space:nowrap;">📷 사진 첨부</label>
+            <input type="file" id="pollOptImg2" accept="image/*" onchange="previewPollOptImg(2)" />
+            <img id="pollOptImgPreview2" style="width:40px;height:40px;object-fit:cover;border-radius:6px;display:none;" />
+          </div>
         </div>
-        <div style="display:flex;gap:8px;align-items:center;margin-bottom:8px;">
-          <input class="form-input" id="pollOpt3" placeholder="선택지 3 (선택사항)" style="flex:1;" />
-          <label class="file-label" for="pollOptImg3" style="padding:8px 12px;white-space:nowrap;">📷</label>
-          <input type="file" id="pollOptImg3" accept="image/*" onchange="previewPollOptImg(3)" />
-          <img id="pollOptImgPreview3" style="width:40px;height:40px;object-fit:cover;border-radius:6px;display:none;" />
+        <div style="margin-bottom:8px;">
+          <input class="form-input" id="pollOpt3" placeholder="선택지 3 (선택사항)" style="width:100%;margin-bottom:6px;" />
+          <div style="display:flex;gap:8px;align-items:center;">
+            <label class="file-label" for="pollOptImg3" style="padding:8px 12px;white-space:nowrap;">📷 사진 첨부</label>
+            <input type="file" id="pollOptImg3" accept="image/*" onchange="previewPollOptImg(3)" />
+            <img id="pollOptImgPreview3" style="width:40px;height:40px;object-fit:cover;border-radius:6px;display:none;" />
+          </div>
         </div>
-        <div style="display:flex;gap:8px;align-items:center;margin-bottom:12px;">
-          <input class="form-input" id="pollOpt4" placeholder="선택지 4 (선택사항)" style="flex:1;" />
-          <label class="file-label" for="pollOptImg4" style="padding:8px 12px;white-space:nowrap;">📷</label>
-          <input type="file" id="pollOptImg4" accept="image/*" onchange="previewPollOptImg(4)" />
-          <img id="pollOptImgPreview4" style="width:40px;height:40px;object-fit:cover;border-radius:6px;display:none;" />
+        <div style="margin-bottom:12px;">
+          <input class="form-input" id="pollOpt4" placeholder="선택지 4 (선택사항)" style="width:100%;margin-bottom:6px;" />
+          <div style="display:flex;gap:8px;align-items:center;">
+            <label class="file-label" for="pollOptImg4" style="padding:8px 12px;white-space:nowrap;">📷 사진 첨부</label>
+            <input type="file" id="pollOptImg4" accept="image/*" onchange="previewPollOptImg(4)" />
+            <img id="pollOptImgPreview4" style="width:40px;height:40px;object-fit:cover;border-radius:6px;display:none;" />
+          </div>
         </div>
         <div style="margin-bottom:12px; display:flex; align-items:center; gap:8px;">
           <input type="checkbox" id="pollAllowReply" checked style="accent-color:var(--accent); width:16px; height:16px;" />
