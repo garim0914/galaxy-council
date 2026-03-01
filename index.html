@@ -179,6 +179,11 @@
     .file-label { display:inline-flex; align-items:center; gap:6px; background:var(--surface2); border:1px dashed var(--border); border-radius:8px; padding:8px 16px; color:var(--muted); font-size:0.85rem; cursor:pointer; transition:all 0.2s; }
     .file-label:hover { border-color:var(--accent); color:var(--accent); }
     input[type="file"] { display:none; }
+    @keyframes easterBurst {
+      0%   { transform: scale(0); opacity: 1; }
+      60%  { transform: scale(1.3); opacity: 1; }
+      100% { transform: scale(4); opacity: 0; }
+    }
   </style>
 </head>
 <body>
@@ -1026,5 +1031,31 @@ document.querySelector('.nav-logo').addEventListener('click', () => {
 <div id="pollImgPopup" onclick="closePollImg()" style="display:none;position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,0.85);z-index:9999;align-items:center;justify-content:center;">
   <img id="pollImgPopupImg" style="max-width:90%;max-height:90%;border-radius:12px;" />
 </div>
+
+<!-- 이스터에그 오버레이 -->
+<div id="easterEggOverlay" style="position:fixed;top:0;left:0;width:100%;height:100%;z-index:9999;pointer-events:none;display:flex;align-items:center;justify-content:center;">
+  <img id="easterEggImg" src="galaxy.png" style="width:80vmin;height:80vmin;object-fit:contain;transform:scale(0);opacity:0;border-radius:50%;box-shadow:0 0 80px rgba(167,139,250,0.8);" />
+</div>
+
+<script>
+(function() {
+  let pressTimer = null;
+  const img = document.getElementById('easterEggImg');
+
+  function triggerEasterEgg() {
+    img.style.animation = 'none';
+    img.style.opacity = '1';
+    void img.offsetWidth; // 애니메이션 리셋 트릭
+    img.style.animation = 'easterBurst 0.7s cubic-bezier(0.22,1,0.36,1) forwards';
+  }
+
+  const footer = document.querySelector('footer');
+  footer.addEventListener('mousedown',  () => { pressTimer = setTimeout(triggerEasterEgg, 500); });
+  footer.addEventListener('mouseup',    () => clearTimeout(pressTimer));
+  footer.addEventListener('mouseleave', () => clearTimeout(pressTimer));
+  footer.addEventListener('touchstart', () => { pressTimer = setTimeout(triggerEasterEgg, 500); }, { passive: true });
+  footer.addEventListener('touchend',   () => clearTimeout(pressTimer));
+})();
+</script>
 </body>
 </html>
