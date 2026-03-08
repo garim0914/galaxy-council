@@ -515,7 +515,8 @@
 </div>
 
 <script>
-  const ADMIN_PASSWORD = "0414";
+  const BOARD_PASSWORD = "0414";   // 공지사항·투표 비번
+  const SUGGEST_PASSWORD = "0922"; // 건의함 비번
 
   // 별 배경
   const canvas = document.getElementById('stars-canvas');
@@ -623,7 +624,7 @@
   // ── 게시판 ──
   function loginBoard() {
     const pw = document.getElementById('boardPw').value;
-    if (pw === ADMIN_PASSWORD) {
+    if (pw === BOARD_PASSWORD) {
       boardLoggedIn = true;
       document.getElementById('loginBox').style.display = 'none';
       document.getElementById('writeForm').style.display = 'block';
@@ -929,7 +930,7 @@
   }
   function loginSuggest() {
     const pw = document.getElementById('suggestPw').value;
-    if (pw === ADMIN_PASSWORD) {
+    if (pw === SUGGEST_PASSWORD) {
       suggestLoggedIn = true;
       document.getElementById('suggestAdmin').classList.add('open');
       renderSuggests();
@@ -1003,19 +1004,28 @@ function closeAdminPopup() {
 }
 function adminLogin() {
   const pw = document.getElementById('adminPwInput').value;
-  if (pw === ADMIN_PASSWORD) {
-    boardLoggedIn = true;
-    suggestLoggedIn = true;
+  const isBoardPw = pw === BOARD_PASSWORD;
+  const isSuggestPw = pw === SUGGEST_PASSWORD;
+  if (isBoardPw || isSuggestPw) {
+    if (isBoardPw) {
+      boardLoggedIn = true;
+      document.getElementById('writeForm').style.display = 'block';
+      document.getElementById('pollWriteForm').style.display = 'block';
+      renderPosts();
+    }
+    if (isSuggestPw) {
+      suggestLoggedIn = true;
+      document.getElementById('suggestAdmin').classList.add('open');
+      renderSuggests();
+      renderPolls();
+    }
     closeAdminPopup();
-    document.getElementById('writeForm').style.display = 'block';
-    document.getElementById('pollWriteForm').style.display = 'block';
-    document.getElementById('suggestAdmin').classList.add('open');
-    renderPosts(); renderSuggests();
     showToast('관리자 로그인 되었습니다!');
   } else {
     showToast('비밀번호가 틀렸습니다.');
   }
 }
+
 let tapCount = 0;
 let tapTimer = null;
 document.querySelector('.nav-logo').addEventListener('click', () => {
